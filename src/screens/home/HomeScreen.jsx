@@ -1,19 +1,41 @@
 // HomeScreen.js
 
 import React from 'react';
-import { View, Button, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import CardButtonComponent from '../../components/CardButtonComponent';
+import HeaderComponent from '../../components/HeaderComponent';
 
 const HomeScreen = ({ navigation }) => {
+    // Replace 'YOUR_IMAGE_URL' with the actual URL of your image
+    const imageUrl = 'YOUR_IMAGE_URL';
+
     return (
         <View style={styles.container}>
-            <Button
-                title="Track Expenses"
-                onPress={() => navigation.navigate('ExpenseTracking')}
+            <HeaderComponent
+                imageUrl={imageUrl}
+                title="BudgetBuddy"
+                slogan="Beyond Budgeting – BudgetBuddy, Your Guide to Financial Wisdom."
             />
-            <Button
-                title="Explore"
-                onPress={() => navigation.navigate('Explore')}
-            />
+
+            <View style={styles.cardContainer}>
+                <CardButtonComponent
+                    icon="attach-money"
+                    title="Track"
+                    onPress={() => navigation.navigate('Expense')}
+                />
+
+                <CardButtonComponent
+                    icon="explore"
+                    title="Explore"
+                    onPress={() => navigation.navigate('Explore')}
+                />
+
+                <CardButtonComponent
+                    icon="chat"
+                    title="Chat"
+                    onPress={() => navigation.navigate('Chat')}
+                />
+            </View>
         </View>
     );
 };
@@ -21,8 +43,14 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        padding: 16,
+        backgroundColor: '#fff',
         justifyContent: 'center',
-        alignItems: 'center',
+    },
+    cardContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginTop: 20,
     },
 });
 
