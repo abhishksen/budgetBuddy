@@ -1,12 +1,8 @@
-// NewsCardComponent.js
-
 import React from 'react';
 import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 
 const NewsCardComponent = ({ article, onPress }) => {
     const { title, description, urlToImage } = article;
-
-    // console.log(article)
 
     return (
         <Pressable onPress={() => onPress(article)} style={styles.card}>
@@ -26,9 +22,9 @@ const styles = StyleSheet.create({
     card: {
         borderRadius: 10,
         marginVertical: 8,
-        overflow: 'hidden', // Clip the image to stay within the rounded corners
-        elevation: 2, // Add shadow for a slight elevation effect
-        backgroundColor: '#fff', // White background
+        overflow: 'hidden',
+        elevation: 2,
+        backgroundColor: '#fff',
     },
     image: {
         height: 200,
@@ -41,11 +37,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         marginBottom: 8,
-        color: '#333', // Dark text color
+        color: '#333',
     },
     description: {
         fontSize: 14,
-        color: '#555', // Slightly darker text color
+        color: '#555',
     },
 });
 

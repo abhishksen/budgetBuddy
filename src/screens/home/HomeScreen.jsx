@@ -1,18 +1,13 @@
-// HomeScreen.js
-
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import CardButtonComponent from '../../components/CardButtonComponent';
 import HeaderComponent from '../../components/HeaderComponent';
 
 const HomeScreen = ({ navigation }) => {
-    // Replace 'YOUR_IMAGE_URL' with the actual URL of your image
-    const imageUrl = 'YOUR_IMAGE_URL';
 
     return (
         <View style={styles.container}>
             <HeaderComponent
-                imageUrl={imageUrl}
                 title="BudgetBuddy"
                 slogan="Beyond Budgeting – BudgetBuddy, Your Guide to Financial Wisdom."
             />

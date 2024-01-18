@@ -1,5 +1,3 @@
-// FullArticleScreen.js
-
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, Linking, ActivityIndicator } from 'react-native';
 
