@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
-// import DateTimePicker from '@react-native-community/datetimepicker';
-
+import DateTimePicker from '@react-native-community/datetimepicker';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const ExpenseTrackerScreen = () => {
     const [expenseAmount, setExpenseAmount] = useState('');
     const [expenseCategory, setExpenseCategory] = useState('');
     const [expenseDescription, setExpenseDescription] = useState('');
     const [expenseDate, setExpenseDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
 
-    const handleDateChange = (date) => {
-        setExpenseDate(date);
+    const handleDateChange = (event, date) => {
+        if (event.type === 'set') {
+            setExpenseDate(date || new Date());
+        }
+        setShowDatePicker(false);
     };
 
     const handleSaveExpense = () => {
@@ -40,6 +44,25 @@ const ExpenseTrackerScreen = () => {
                 onChangeText={(text) => setExpenseCategory(text)}
             />
 
+            <Pressable
+                style={[styles.input, styles.datePickerButton]}
+                onPress={() => setShowDatePicker(true)}
+            >
+                <Icon name="calendar" size={24} color="#2C3E50" />
+                <Text style={styles.datePickerButtonText}>
+                    {expenseDate.toDateString()}
+                </Text>
+            </Pressable>
+
+            {showDatePicker && (
+                <DateTimePicker
+                    value={expenseDate}
+                    mode="date"
+                    display="default"
+                    onChange={handleDateChange}
+                />
+            )}
+
             <TextInput
                 style={[styles.input, styles.textArea]}
                 placeholder="Expense Description"
@@ -48,14 +71,6 @@ const ExpenseTrackerScreen = () => {
                 value={expenseDescription}
                 onChangeText={(text) => setExpenseDescription(text)}
             />
-
-            {/* <DateTimePicker
-                style={styles.datePickerButton}
-                value={expenseDate}
-                mode="date"
-                display="default"
-                onChange={(event, date) => handleDateChange(date)}
-            /> */}
 
             <Pressable style={styles.saveButton} onPress={handleSaveExpense}>
                 <Text style={styles.saveButtonText}>Save Expense</Text>
@@ -92,11 +107,17 @@ const styles = StyleSheet.create({
         textAlignVertical: 'top', // to start text from the top of the input
     },
     datePickerButton: {
-        backgroundColor: '#4CAF50',
-        borderRadius: 8,
-        paddingVertical: 12,
+        flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#2C3E50',
+        paddingBottom: 8,
+    },
+    datePickerButtonText: {
+        marginLeft: 8,
+        color: '#2C3E50',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
     saveButton: {
         backgroundColor: '#4CAF50',

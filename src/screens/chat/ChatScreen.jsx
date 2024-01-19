@@ -23,6 +23,7 @@ const ChatScreen = () => {
 
             // Simulate chatbot message
             setMessages([...messages, { text: chatbotResponse, isUser: false }]);
+
         } catch (error) {
             console.error('Error getting chatbot response:', error);
         }
