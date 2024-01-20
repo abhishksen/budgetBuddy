@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, FlatList, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, FlatList, SafeAreaView, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { PieChart } from 'react-native-chart-kit';
+import * as SecureStore from 'expo-secure-store';
 
 const ExpenseTrackerScreen = () => {
     const [expenseAmount, setExpenseAmount] = useState('');
@@ -13,7 +12,7 @@ const ExpenseTrackerScreen = () => {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [allExpenses, setAllExpenses] = useState([]);
 
-
+    // for handling date change in date picker
     const handleDateChange = (event, date) => {
         if (event.type === 'set') {
             setExpenseDate(date || new Date());
@@ -21,7 +20,13 @@ const ExpenseTrackerScreen = () => {
         setShowDatePicker(false);
     };
 
+    // for saving the expense in async storage
     const handleSaveExpense = async () => {
+
+        if (!expenseAmount || !expenseCategory || !expenseDescription) {
+            return alert('Please fill all the fields');
+        }
+
         try {
             const expenseData = {
                 amount: expenseAmount,
@@ -30,34 +35,29 @@ const ExpenseTrackerScreen = () => {
                 date: expenseDate.toISOString(),
             };
 
-            // Get existing expense data from AsyncStorage
-            const existingData = await AsyncStorage.getItem('expenseData');
+            const existingData = await SecureStore.getItemAsync('expenseData');
             const existingArray = existingData ? JSON.parse(existingData) : [];
 
-            // Add the new expense data
             existingArray.push(expenseData);
 
-            // Save the updated data back to AsyncStorage
-            await AsyncStorage.setItem('expenseData', JSON.stringify(existingArray));
+            await SecureStore.setItemAsync('expenseData', JSON.stringify(existingArray));
 
-            // Update the list of expenses
             setAllExpenses(existingArray);
 
-            // Optionally, you can reset the form fields after successful save
             setExpenseAmount('');
             setExpenseCategory('');
             setExpenseDescription('');
             setExpenseDate(new Date());
         } catch (error) {
             console.error('Error saving expense:', error);
-            // Handle any errors (e.g., show an error message)
         }
     };
 
+    // for fetching the expenses when component mounts
     useEffect(() => {
         const fetchExpenses = async () => {
             try {
-                const storedData = await AsyncStorage.getItem('expenseData');
+                const storedData = await SecureStore.getItemAsync('expenseData');
                 const storedArray = storedData ? JSON.parse(storedData) : [];
                 setAllExpenses(storedArray);
             } catch (error) {
@@ -68,69 +68,59 @@ const ExpenseTrackerScreen = () => {
         fetchExpenses();
     }, []);
 
+    // for clearing the async storage
     const clearAsyncStorage = async () => {
-        try {
-            await AsyncStorage.removeItem('expenseData');
-            setAllExpenses([]); // Clear the expenses in the state
-            console.log('AsyncStorage cleared successfully');
-        } catch (error) {
-            console.error('Error clearing AsyncStorage:', error);
-        }
+        Alert.alert(
+            'Confirm',
+            'Are you sure you want to clear all your previous expenses?',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Yes',
+                    onPress: async () => {
+                        try {
+                            await SecureStore.deleteItemAsync('expenseData');
+                            setAllExpenses([]);
+                            console.log('SecureStore cleared successfully');
+                            Alert.alert('SecureStore cleared successfully');
+                        } catch (error) {
+                            console.error('Error clearing SecureStore:', error);
+                        }
+                    },
+                },
+            ],
+            { cancelable: false }
+        );
     };
 
-    const getExpenseDataForChart = () => {
-        // Calculate expense distribution by category for the pie chart
-        const categoryDistribution = {};
+    // for setting color by category
+    const setColorByCategory = (category) => {
+        const trimmedCategory = category.trim().toLowerCase();
 
-        allExpenses.forEach((expense) => {
-            const { category, amount } = expense;
-
-            if (categoryDistribution[category]) {
-                categoryDistribution[category] += amount;
-            } else {
-                categoryDistribution[category] = amount;
-            }
-        });
-
-        // Convert the category distribution object into an array of objects
-        const chartData = Object.keys(categoryDistribution).map((category) => ({
-            category,
-            amount: categoryDistribution[category],
-        }));
-
-        return chartData;
+        if (trimmedCategory === 'food') return '#3498db';
+        else if (trimmedCategory === 'travel') return '#9b59b6';
+        else if (trimmedCategory === 'medical') return '#e74c3c';
+        else if (trimmedCategory === 'education') return '#f1c40f';
+        else if (trimmedCategory === 'shopping') return '#e67e22';
+        else if (trimmedCategory === 'bills') return '#e74c3c';
+        else if (trimmedCategory === 'entertainment') return '#f1c40f';
+        else if (trimmedCategory === 'misc') return '#2ecc71';
+        else if (trimmedCategory === 'others') return '#1abc9c';
+        else return '#2c3e50';
     };
-
-    const getCategoryColor = (category) => {
-        switch (category.toLowerCase()) {
-            case 'Food':
-                return '#4CAF50'; // Green for Food
-            case 'entertainment':
-                return '#3498db'; // Blue for Entertainment
-            case 'transportation':
-                return '#e74c3c'; // Red for Transportation
-            case 'shopping':
-                return '#f39c12'; // Yellow for Shopping
-            case 'utilities':
-                return '#9b59b6'; // Purple for Utilities
-            // Add more cases for other categories as needed
-            default:
-                return '#3498db'; // Default color for unrecognized categories
-        }
-    };
-
 
     return (
         <SafeAreaView style={styles.container}>
-            {/* <Text style={styles.title}>Add Expense</Text> */}
-
             <TextInput
                 style={styles.input}
                 placeholder="Expense Amount"
                 keyboardType="numeric"
-                value={expenseAmount.toString()} // Convert number to string for TextInput
+                value={expenseAmount.toString()}
                 onChangeText={(text) => {
-                    const amount = parseFloat(text) || 0; // Parse input as float or set to 0 if invalid
+                    const amount = parseFloat(text) || 0;
                     setExpenseAmount(amount);
                 }}
             />
@@ -150,7 +140,6 @@ const ExpenseTrackerScreen = () => {
                     {expenseDate.toDateString()}
                 </Text>
             </Pressable>
-
             {showDatePicker && (
                 <DateTimePicker
                     value={expenseDate}
@@ -159,7 +148,6 @@ const ExpenseTrackerScreen = () => {
                     onChange={handleDateChange}
                 />
             )}
-
             <TextInput
                 style={[styles.input, styles.textArea]}
                 placeholder="Expense Description"
@@ -168,19 +156,21 @@ const ExpenseTrackerScreen = () => {
                 value={expenseDescription}
                 onChangeText={(text) => setExpenseDescription(text)}
             />
-
             <Pressable style={styles.saveButton} onPress={handleSaveExpense}>
                 <Text style={styles.saveButtonText}>Save Expense</Text>
             </Pressable>
 
-            {/* expenses items */}
+
+            {/* for rendering all the expenses */}
+
             <Text style={styles.title}>Previous Expenses</Text>
             <FlatList
                 showsVerticalScrollIndicator={false}
                 data={allExpenses}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => (
-                    <View style={[styles.expenseItem, { backgroundColor: getCategoryColor(item.category) }]}>
+                    // <View style={[styles.expenseItem, { backgroundColor: "#3498db" }]}>
+                    <View style={[styles.expenseItem, { backgroundColor: setColorByCategory(item.category) }]}>
                         <Text style={styles.expenseAmount}>{`Amount: ${item.amount}`}</Text>
                         <Text style={styles.expenseCategory}>{`Category: ${item.category}`}</Text>
                         <Text style={styles.expenseDescription}>{`Description: ${item.description}`}</Text>
@@ -188,30 +178,11 @@ const ExpenseTrackerScreen = () => {
                     </View>
                 )}
             />
-
-            {/* Clear AsyncStorage Button */}
-            <Pressable style={styles.clearButton} onPress={clearAsyncStorage}>
-                <Text style={styles.clearButtonText}>Clear AsyncStorage</Text>
-            </Pressable>
-
-
-            {/* Pie chart for expense analytics */}
-            {/* <View style={styles.chartContainer}>
-                <Text style={styles.chartTitle}>Expense Distribution</Text>
-                <PieChart
-                    data={getExpenseDataForChart()}
-                    width={300}
-                    height={200}
-                    chartConfig={{
-                        backgroundGradientFrom: '#fff',
-                        backgroundGradientTo: '#fff',
-                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                    }}
-                    accessor="amount"
-                    backgroundColor="transparent"
-                />
-            </View> */}
-
+            {allExpenses && allExpenses.length > 0 && (
+                <Pressable style={styles.clearButton} onPress={clearAsyncStorage}>
+                    <Text style={styles.clearButtonText}>Clear Expenses</Text>
+                </Pressable>
+            )}
         </SafeAreaView>
     );
 };
@@ -232,7 +203,6 @@ const styles = StyleSheet.create({
         height: 40,
         borderColor: '#2C3E50',
         borderBottomWidth: 1,
-        // borderRadius: 8,
         marginBottom: 12,
         paddingHorizontal: 8,
         color: '#2C3E50',
@@ -241,7 +211,7 @@ const styles = StyleSheet.create({
         height: 80,
         paddingHorizontal: 8,
         paddingVertical: 8,
-        textAlignVertical: 'top', // to start text from the top of the input
+        textAlignVertical: 'top',
     },
     datePickerButton: {
         flexDirection: 'row',
@@ -269,7 +239,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     expenseItem: {
-        backgroundColor: '#fff', // Adjust based on your color scheme
+        backgroundColor: '#fff',
         borderRadius: 8,
         marginBottom: 16,
         padding: 16,
@@ -277,11 +247,11 @@ const styles = StyleSheet.create({
     expenseAmount: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#fefefe', // Adjust based on your color scheme
+        color: '#fefefe',
     },
     expenseCategory: {
         fontSize: 16,
-        color: '#fff', // Example color for category, adjust based on your color scheme
+        color: '#fff',
         marginTop: 8,
     },
     expenseDescription: {
@@ -294,19 +264,8 @@ const styles = StyleSheet.create({
         color: '#ddd',
         marginTop: 8,
     },
-
-    chartContainer: {
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    chartTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 10,
-        color: '#2C3E50',
-    },
     clearButton: {
-        backgroundColor: '#e74c3c', // Red color for the button
+        backgroundColor: '#e74c3c',
         borderRadius: 8,
         paddingVertical: 12,
         alignItems: 'center',
@@ -320,4 +279,5 @@ const styles = StyleSheet.create({
 });
 
 export default ExpenseTrackerScreen;
+
 
