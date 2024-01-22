@@ -7,6 +7,8 @@ import ExpenseTrackingScreen from '../screens/tracker/ExpenseTrackingScreen';
 import ExploreScreen from '../screens/explore/ExploreScreen.jsx';
 import ChatScreen from '../screens/chat/ChatScreen';
 import FullArticleScreen from '../screens/fullArticle/FullArticleScreen';
+import AnalyticsScreen from '../screens/analytics/AnalyticsScreen';
+import ProfileScreen from '../screens/profile/ProfileScreen';
 
 const Stack = createStackNavigator();
 
@@ -19,6 +21,8 @@ const HomeNavigation = () => {
                 <Stack.Screen name="Explore" component={ExploreScreen} />
                 <Stack.Screen name="Chat" component={ChatScreen} />
                 <Stack.Screen name="Full Article" component={FullArticleScreen} />
+                <Stack.Screen name="Profile" component={ProfileScreen} />
+                <Stack.Screen name="Analytics" component={AnalyticsScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
