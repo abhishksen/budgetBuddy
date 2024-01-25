@@ -28,9 +28,8 @@
 
 
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { BarChart, LineChart, PieChart } from 'react-native-chart-kit';
-import { ScrollView } from 'react-native-gesture-handler';
 
 const AnalyticsScreen = () => {
     // Dummy data for pie chart
@@ -71,6 +70,22 @@ const AnalyticsScreen = () => {
             legendFontSize: 10,
         },
     ];
+
+    const setColorByCategory = (category) => {
+        const trimmedCategory = category.trim().toLowerCase();
+
+        if (trimmedCategory === 'food') return '#3498db';
+        else if (trimmedCategory === 'travel') return '#9b59b6';
+        else if (trimmedCategory === 'medical') return '#e74c3c';
+        else if (trimmedCategory === 'education') return '#f1c40f';
+        else if (trimmedCategory === 'shopping') return '#e67e22';
+        else if (trimmedCategory === 'bills') return '#e74c3c';
+        else if (trimmedCategory === 'entertainment') return '#f1c40f';
+        else if (trimmedCategory === 'misc') return '#2ecc71';
+        else if (trimmedCategory === 'others') return '#1abc9c';
+        else return '#2c3e50';
+    };
+
 
     const totalAmount = data.reduce((total, item) => total + item.amount, 0);
 
@@ -177,12 +192,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     statsContainer: {
-        // marginTop: 20,
-        // marginBottom: 20,
         marginVertical: 10,
         padding: 16,
         borderRadius: 10,
-        backgroundColor: '#2C3E50', // Light grey background
+        backgroundColor: '#2C3E50',
     },
     statsTitle: {
         fontSize: 20,

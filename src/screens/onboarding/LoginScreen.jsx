@@ -1,29 +1,40 @@
 import React from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
 
 const LoginScreen = ({ navigation }) => {
+
+    const handleLogin = () => {
+        // Navigate to the Home screen or any desired screen
+        navigation.navigate('Home');
+    }
+
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Login to Your Account</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Email"
-                keyboardType="email-address"
-                autoCapitalize="none"
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Password"
-                secureTextEntry
-            />
-            <Pressable style={styles.button}>
-                <Text style={styles.buttonText}>Login</Text>
-            </Pressable>
-            <View style={styles.loginTextContainer}>
-                <Text style={{}}>Don't have an account?</Text>
-                <Pressable style={styles.loginLink} onPress={() => navigation.navigate('Register')}>
-                    <Text style={styles.loginText}>Register here</Text>
+            <View style={styles.imgContainer}>
+                <Image source={require('../../../assets/img/logo.png')} style={styles.image} resizeMode="contain" />
+            </View>
+            <View style={styles.formContainer}>
+                <Text style={styles.title}>Login to Your Account</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Email"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Password"
+                    secureTextEntry
+                />
+                <Pressable style={styles.button} onPress={handleLogin}>
+                    <Text style={styles.buttonText}>Login</Text>
                 </Pressable>
+                <View style={styles.loginTextContainer}>
+                    <Text style={{}}>Don't have an account?</Text>
+                    <Pressable style={styles.loginLink} onPress={() => navigation.navigate('Register')}>
+                        <Text style={styles.loginText}>Register here</Text>
+                    </Pressable>
+                </View>
             </View>
         </View>
     );
@@ -35,6 +46,21 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 16,
+    },
+    imgContainer: {
+        width: '100%',
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    image: {
+        height: 200,
+        marginBottom: 20,
+    },
+    formContainer: {
+        width: '100%',
+        maxWidth: 340,
+        paddingHorizontal: 16,
+        alignItems: 'center',
     },
     title: {
         fontSize: 24,
