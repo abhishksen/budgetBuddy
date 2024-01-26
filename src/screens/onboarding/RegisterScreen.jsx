@@ -3,7 +3,9 @@ import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-nativ
 
 const RegisterScreen = ({ navigation }) => {
     const handleRegister = () => {
-        // Navigate to the Home screen or any desired screen
+        // function to register a user
+
+        // Navigate to the Home screen after registration
         navigation.navigate('Home');
     }
     return (
