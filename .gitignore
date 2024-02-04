@@ -33,5 +33,7 @@ yarn-error.*
 
 .env
 
+constant.js
+
 # typescript
 *.tsbuildinfo

@@ -162,7 +162,9 @@ const ExpenseTrackerScreen = () => {
 
 
             {/* for rendering all the expenses */}
-            <Text style={styles.title}>Previous Expenses</Text>
+            {allExpenses && allExpenses.length > 0 &&
+                <Text style={styles.title}>Previous Expenses</Text>
+            }
             <FlatList
                 showsVerticalScrollIndicator={false}
                 data={allExpenses}
