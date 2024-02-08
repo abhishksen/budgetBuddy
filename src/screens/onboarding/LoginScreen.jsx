@@ -1,11 +1,27 @@
-import React from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet, Image, Alert } from 'react-native';
+import { auth } from '../../config/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import * as SecureStore from 'expo-secure-store';
+
 
 const LoginScreen = ({ navigation }) => {
 
-    const handleLogin = () => {
-        // Navigate to the Home screen or any desired screen
-        navigation.navigate('Home');
+    const [email, setEmail] = useState('user@gmail.com');
+    const [password, setPassword] = useState('password');
+
+    const handleLogin = async () => {
+        if (email === '' || password === '') return Alert.alert('Error', 'Please fill in all fields');
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+
+            // Store user credentials securely in local storage
+            await SecureStore.setItemAsync('user', JSON.stringify({ email, password }));
+
+        } catch (error) {
+            Alert.alert('Error', 'Invalid email or password');
+        }
     }
 
     return (
@@ -20,11 +36,15 @@ const LoginScreen = ({ navigation }) => {
                     placeholder="Email"
                     keyboardType="email-address"
                     autoCapitalize="none"
+                    value={email}
+                    onChangeText={(text) => setEmail(text)}
                 />
                 <TextInput
                     style={styles.input}
                     placeholder="Password"
                     secureTextEntry
+                    value={password}
+                    onChangeText={(text) => setPassword(text)}
                 />
                 <Pressable style={styles.button} onPress={handleLogin}>
                     <Text style={styles.buttonText}>Login</Text>

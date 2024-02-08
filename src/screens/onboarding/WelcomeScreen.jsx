@@ -26,9 +26,9 @@ const WelcomeScreen = ({ navigation }) => {
             <Pressable style={styles.button} onPress={handleGetStarted}>
                 <Text style={styles.buttonText}>Get Started</Text>
             </Pressable>
-            <Pressable style={styles.skipLink} onPress={handleSkip}>
+            {/* <Pressable style={styles.skipLink} onPress={handleSkip}>
                 <Text style={styles.skipText}>Skip</Text>
-            </Pressable>
+            </Pressable> */}
         </View>
     );
 };

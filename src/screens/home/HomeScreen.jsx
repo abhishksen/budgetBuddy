@@ -1,11 +1,19 @@
 import React from 'react';
-import { View, StyleSheet, Pressable, Image } from 'react-native';
+import { View, StyleSheet, Pressable, Image, Text } from 'react-native';
 import CardButtonComponent from '../../components/CardButtonComponent';
 import HeaderComponent from '../../components/HeaderComponent';
 import { AntDesign } from '@expo/vector-icons';
-
+import { signOut } from 'firebase/auth';
+import { auth } from '../../config/firebase';
+import * as SecureStore from 'expo-secure-store';
 
 const HomeScreen = ({ navigation }) => {
+
+    const handlelogout = async () => {
+        await signOut(auth);
+        // Clear user credentials from secure store
+        await SecureStore.deleteItemAsync('user');
+    }
 
     return (
         <View style={styles.container}>
@@ -17,6 +25,9 @@ const HomeScreen = ({ navigation }) => {
                         style={styles.profileImage}
                         source={require('../../../assets/img/profilePic.png')}
                     />
+                </Pressable>
+                <Pressable style={styles.logoutBtn} onPress={handlelogout}>
+                    <Text style={styles.btnText}>Logout</Text>
                 </Pressable>
                 <Pressable style={styles.analyticsIcon} onPress={() => navigation.navigate('Analytics')}>
                     <AntDesign name="piechart" size={40} color="#2C3E50" />
@@ -76,6 +87,16 @@ const styles = StyleSheet.create({
         width: 45,
         height: 45,
         borderRadius: 20,
+    },
+    logoutBtn: {
+        padding: 10,
+        borderRadius: 6,
+        backgroundColor: "#4CAF50",
+    },
+    btnText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 14,
     },
     analyticsIcon: {
         width: 45,

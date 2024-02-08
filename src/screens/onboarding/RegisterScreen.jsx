@@ -1,12 +1,29 @@
-import React from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet, Image, Alert } from 'react-native';
+import { auth } from '../../config/firebase';
+import * as SecureStore from 'expo-secure-store';
 
 const RegisterScreen = ({ navigation }) => {
-    const handleRegister = () => {
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleRegister = async () => {
         // function to register a user
+        if (name === '' || email === '' || password === '') return Alert.alert('Error', 'Please fill in all fields');
+
+        try {
+            await createUserWithEmailAndPassword(auth, email, password);
+            // Save user details to secure store
+            await SecureStore.setItemAsync('user', JSON.stringify({ name, email, password }));
+        } catch (error) {
+            Alert.alert('Error', 'Something went wrong. Please try again later.');
+            console.log(error);
+        }
 
         // Navigate to the Home screen after registration
-        navigation.navigate('Home');
+        // navigation.navigate('Home');
     }
     return (
         <View style={styles.container}>
@@ -18,17 +35,23 @@ const RegisterScreen = ({ navigation }) => {
                 <TextInput
                     style={styles.input}
                     placeholder="Full Name"
+                    value={name}
+                    onChangeText={(text) => setName(text)}
                 />
                 <TextInput
                     style={styles.input}
                     placeholder="Email"
                     keyboardType="email-address"
                     autoCapitalize="none"
+                    value={email}
+                    onChangeText={(text) => setEmail(text)}
                 />
                 <TextInput
                     style={styles.input}
                     placeholder="Password"
                     secureTextEntry
+                    value={password}
+                    onChangeText={(text) => setPassword(text)}
                 />
                 <Pressable style={styles.button} onPress={handleRegister}>
                     <Text style={styles.buttonText}>Register</Text>
