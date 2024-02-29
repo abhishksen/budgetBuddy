@@ -1,75 +1,40 @@
-// import React from 'react';
-// import { View, Text, StyleSheet } from 'react-native';
-
-// const AnalyticsScreen = () => {
-//     return (
-//         <View style={styles.container}>
-//             <Text style={styles.title}>Analytics Screen</Text>
-//             {/* Add your analytics content here */}
-//         </View>
-//     );
-// };
-
-// const styles = StyleSheet.create({
-//     container: {
-//         flex: 1,
-//         backgroundColor: '#fff',
-//         padding: 16,
-//     },
-//     title: {
-//         fontSize: 24,
-//         fontWeight: 'bold',
-//         marginBottom: 16,
-//         color: '#2C3E50',
-//     },
-// });
-
-// export default AnalyticsScreen;
-
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { BarChart, LineChart, PieChart } from 'react-native-chart-kit';
+import * as SecureStore from 'expo-secure-store';
 
 const AnalyticsScreen = () => {
-    // Dummy data for pie chart
-    const data = [
-        {
-            name: 'Food',
-            amount: 300,
-            color: '#3498db',
-            legendFontColor: '#7F7F7F',
-            legendFontSize: 10,
-        },
-        {
-            name: 'Travel',
-            amount: 150,
-            color: '#9b59b6',
-            legendFontColor: '#7F7F7F',
-            legendFontSize: 10,
-        },
-        {
-            name: 'Shopping',
-            amount: 200,
-            color: '#e67e22',
-            legendFontColor: '#7F7F7F',
-            legendFontSize: 10,
-        },
-        {
-            name: 'Bills',
-            amount: 100,
-            color: '#e74c3c',
-            legendFontColor: '#7F7F7F',
-            legendFontSize: 10,
-        },
-        {
-            name: 'Misc',
-            amount: 50,
-            color: '#2ecc71',
-            legendFontColor: '#7F7F7F',
-            legendFontSize: 10,
-        },
-    ];
+    const [expenses, setExpenses] = useState([]);
+
+    useEffect(() => {
+        const fetchExpenses = async () => {
+            try {
+                const expensesData = await SecureStore.getItemAsync('expenseData');
+                if (expensesData) {
+                    setExpenses(JSON.parse(expensesData));
+                }
+            } catch (error) {
+                console.error('Error fetching expenses:', error);
+            }
+        };
+        fetchExpenses();
+    }, []);
+
+    const calculateCategoryWiseTotal = () => {
+        const categoryTotals = {};
+        expenses.forEach((item) => {
+            if (categoryTotals[item.category]) {
+                categoryTotals[item.category] += item.amount;
+            } else {
+                categoryTotals[item.category] = item.amount;
+            }
+        });
+        return categoryTotals;
+    };
+
+    const totalCategoryWiseExpenses = calculateCategoryWiseTotal();
+
+    // console.log(totalCategoryWiseExpenses);
 
     const setColorByCategory = (category) => {
         const trimmedCategory = category.trim().toLowerCase();
@@ -86,25 +51,21 @@ const AnalyticsScreen = () => {
         else return '#2c3e50';
     };
 
-
-    const totalAmount = data.reduce((total, item) => total + item.amount, 0);
-
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-
             {/* Stats Table and Total Amount */}
             <View style={styles.statsContainer}>
                 <Text style={styles.statsTitle}>Expense Statistics</Text>
                 <View style={styles.statsTable}>
-                    {data.map((item, index) => (
+                    {Object.entries(totalCategoryWiseExpenses).map(([category, totalAmount], index) => (
                         <View key={index} style={styles.statsRow}>
-                            <Text style={styles.statsCategory}>{item.name}</Text>
-                            <Text style={styles.statsAmount}>{`₹${item.amount.toFixed(2)}`}</Text>
+                            <Text style={styles.statsCategory}>{category}</Text>
+                            <Text style={styles.statsAmount}>{`₹${totalAmount.toFixed(2)}`}</Text>
                         </View>
                     ))}
                     <View style={styles.statsRow}>
                         <Text style={styles.statsCategory}>Total</Text>
-                        <Text style={styles.statsAmount}>{`₹${totalAmount.toFixed(2)}`}</Text>
+                        <Text style={styles.statsAmount}>{`₹${expenses.reduce((total, item) => total + item.amount, 0).toFixed(2)}`}</Text>
                     </View>
                 </View>
             </View>
@@ -112,19 +73,44 @@ const AnalyticsScreen = () => {
             {/* chart container with chart items */}
             <View style={styles.chartContainer}>
                 <Text style={styles.title}>Visualize Your Expense Distribution</Text>
+                {/* Pie Chart */}
+                <PieChart
+                    data={Object.entries(totalCategoryWiseExpenses).map(([category, totalAmount]) => ({
+                        name: category,
+                        amount: totalAmount,
+                        // color: '#' + Math.floor(Math.random() * 16777215).toString(16), // Generate random color
+                        color: setColorByCategory(category), // Generate random color
+                        legendFontColor: '#7F7F7F',
+                        legendFontSize: 10,
+                    }))}
+                    width={300}
+                    height={200}
+                    chartConfig={{
+                        backgroundGradientFrom: '#fff',
+                        backgroundGradientTo: '#fff',
+                        color: (opacity = 1) => `rgba(0, 122, 255, ${opacity})`,
+                    }}
+                    accessor="amount"
+                    backgroundColor="transparent"
+                    paddingLeft="15"
+                    style={{
+                        marginVertical: 10,
+                        borderRadius: 16,
+                    }}
+                />
+
                 {/* Bar Chart */}
                 <BarChart
                     data={{
-                        labels: data.map(item => item.name),
+                        labels: Object.keys(totalCategoryWiseExpenses),
                         datasets: [
                             {
-                                data: data.map(item => item.amount),
+                                data: Object.values(totalCategoryWiseExpenses),
                             },
                         ],
                     }}
                     width={300}
                     height={200}
-                    // yAxisSuffix="₹"
                     yAxisLabel="₹"
                     chartConfig={{
                         backgroundGradientFrom: '#fff',
@@ -136,27 +122,8 @@ const AnalyticsScreen = () => {
                         borderRadius: 16,
                     }}
                 />
-
-                {/* pie chart */}
-                <PieChart
-                    data={data}
-                    width={300}
-                    height={200}
-                    chartConfig={{
-                        backgroundGradientFrom: '#fff',
-                        backgroundGradientTo: '#fff',
-                        color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`, // blue color
-                    }}
-                    accessor="amount"
-                    backgroundColor="transparent"
-                    paddingLeft="15"
-                    style={{
-                        marginVertical: 10,
-                        borderRadius: 16,
-                    }}
-                />
-
                 {/* Line Chart */}
+                {/* 
                 <LineChart
                     data={{
                         labels: data.map(item => item.name),
@@ -168,7 +135,6 @@ const AnalyticsScreen = () => {
                     }}
                     width={300}
                     height={200}
-                    // yAxisSuffix="₹"
                     yAxisLabel='₹'
                     chartConfig={{
                         backgroundGradientFrom: '#fff',
@@ -179,7 +145,30 @@ const AnalyticsScreen = () => {
                         marginVertical: 8,
                         borderRadius: 16,
                     }}
-                />
+                /> */}
+
+                {/* <LineChart
+                    data={{
+                        labels: Object.keys(totalCategoryWiseExpenses),
+                        datasets: [
+                            {
+                                data: Object.values(totalCategoryWiseExpenses),
+                            },
+                        ],
+                    }}
+                    width={300}
+                    height={200}
+                    yAxisLabel='₹'
+                    chartConfig={{
+                        backgroundGradientFrom: '#fff',
+                        backgroundGradientTo: '#fff',
+                        color: (opacity = 1) => `rgba(255, 185, 0, ${opacity})`, // Yellow color
+                    }}
+                    style={{
+                        marginVertical: 8,
+                        borderRadius: 16,
+                    }}
+                /> */}
             </View>
         </ScrollView>
     );
