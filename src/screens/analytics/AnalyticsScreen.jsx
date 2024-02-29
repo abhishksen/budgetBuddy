@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { BarChart, LineChart, PieChart } from 'react-native-chart-kit';
+import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { BarChart, LineChart, PieChart, ProgressChart } from 'react-native-chart-kit';
 import * as SecureStore from 'expo-secure-store';
 
 const AnalyticsScreen = () => {
@@ -50,6 +50,8 @@ const AnalyticsScreen = () => {
         else if (trimmedCategory === 'others') return '#1abc9c';
         else return '#2c3e50';
     };
+
+    const dataForLineChart = Object.values(totalCategoryWiseExpenses);
 
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -115,46 +117,44 @@ const AnalyticsScreen = () => {
                     chartConfig={{
                         backgroundGradientFrom: '#fff',
                         backgroundGradientTo: '#fff',
-                        color: (opacity = 1) => `rgba(0, 122, 255, ${opacity})`,
+                        color: (opacity = 1) => `rgba(4,77,186, ${opacity})`,
                     }}
                     style={{
                         marginVertical: 8,
                         borderRadius: 16,
                     }}
                 />
-                {/* Line Chart */}
-                {/* 
-                <LineChart
+
+                <ProgressChart
                     data={{
-                        labels: data.map(item => item.name),
-                        datasets: [
-                            {
-                                data: data.map(item => item.amount),
-                            },
-                        ],
+                        // labels: ["Swim", "Bike", "Run"], // optional
+                        data: dataForLineChart.length > 0 ? dataForLineChart : [0],
                     }}
                     width={300}
-                    height={200}
-                    yAxisLabel='₹'
+                    height={220}
+                    strokeWidth={6}
+                    radius={20}
+                    hideLegend={false}
                     chartConfig={{
                         backgroundGradientFrom: '#fff',
                         backgroundGradientTo: '#fff',
-                        color: (opacity = 1) => `rgba(255, 185, 0, ${opacity})`, // Yellow color
+                        color: (opacity = 1) => `rgba(46, 204, 113, ${opacity})`,
                     }}
                     style={{
                         marginVertical: 8,
                         borderRadius: 16,
                     }}
-                /> */}
+                />
 
-                {/* <LineChart
+                {/* Line Chart */}
+                <LineChart
                     data={{
                         labels: Object.keys(totalCategoryWiseExpenses),
                         datasets: [
                             {
-                                data: Object.values(totalCategoryWiseExpenses),
-                            },
-                        ],
+                                data: dataForLineChart.length > 0 ? dataForLineChart : [0],
+                            }
+                        ]
                     }}
                     width={300}
                     height={200}
@@ -162,13 +162,14 @@ const AnalyticsScreen = () => {
                     chartConfig={{
                         backgroundGradientFrom: '#fff',
                         backgroundGradientTo: '#fff',
-                        color: (opacity = 1) => `rgba(255, 185, 0, ${opacity})`, // Yellow color
+                        color: (opacity = 1) => `rgba(255, 185, 0, ${opacity})`,
                     }}
+                    bezier
                     style={{
                         marginVertical: 8,
                         borderRadius: 16,
                     }}
-                /> */}
+                />
             </View>
         </ScrollView>
     );
