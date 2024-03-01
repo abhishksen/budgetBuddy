@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet, Pressable, Image, Text } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Pressable, Image, Text, Alert, ActivityIndicator } from 'react-native';
 import CardButtonComponent from '../../components/CardButtonComponent';
 import HeaderComponent from '../../components/HeaderComponent';
 import { AntDesign } from '@expo/vector-icons';
@@ -8,11 +8,19 @@ import { auth } from '../../config/firebase';
 import * as SecureStore from 'expo-secure-store';
 
 const HomeScreen = ({ navigation }) => {
+    const [loading, setLoading] = useState(false);
 
     const handlelogout = async () => {
-        await signOut(auth);
-        // Clear user credentials from secure store
-        await SecureStore.deleteItemAsync('user');
+        setLoading(true);
+        try {
+            await signOut(auth);
+            // Clear user credentials from secure store
+            await SecureStore.deleteItemAsync('user');
+        } catch (error) {
+            Alert.alert('Error', 'Something went wrong. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -27,7 +35,7 @@ const HomeScreen = ({ navigation }) => {
                     />
                 </Pressable>
                 <Pressable style={styles.logoutBtn} onPress={handlelogout}>
-                    <Text style={styles.btnText}>Logout</Text>
+                    {loading ? <ActivityIndicator color={"#fff"} /> : <Text style={styles.btnText}>Logout</Text>}
                 </Pressable>
                 <Pressable style={styles.analyticsIcon} onPress={() => navigation.navigate('Analytics')}>
                     <AntDesign name="piechart" size={40} color="#2C3E50" />

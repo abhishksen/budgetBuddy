@@ -1,6 +1,6 @@
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, Image, Alert, ActivityIndicator } from 'react-native';
 import { auth } from '../../config/firebase';
 import * as SecureStore from 'expo-secure-store';
 
@@ -8,11 +8,13 @@ const RegisterScreen = ({ navigation }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleRegister = async () => {
         // function to register a user
         if (name === '' || email === '' || password === '') return Alert.alert('Error', 'Please fill in all fields');
 
+        setLoading(true);
         try {
             await createUserWithEmailAndPassword(auth, email, password);
             // Save user details to secure store
@@ -20,6 +22,8 @@ const RegisterScreen = ({ navigation }) => {
         } catch (error) {
             Alert.alert('Error', 'Something went wrong. Please try again later.');
             console.log(error);
+        } finally {
+            setLoading(false);
         }
 
         // Navigate to the Home screen after registration
@@ -54,7 +58,7 @@ const RegisterScreen = ({ navigation }) => {
                     onChangeText={(text) => setPassword(text)}
                 />
                 <Pressable style={styles.button} onPress={handleRegister}>
-                    <Text style={styles.buttonText}>Register</Text>
+                    {loading ? <ActivityIndicator color={"#fff"} /> : <Text style={styles.buttonText}>Register</Text>}
                 </Pressable>
                 <View style={styles.loginTextContainer}>
                     <Text style={{}}>Already have an account?</Text>

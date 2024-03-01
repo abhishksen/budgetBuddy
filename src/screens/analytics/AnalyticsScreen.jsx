@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { BarChart, LineChart, PieChart, ProgressChart } from 'react-native-chart-kit';
 import * as SecureStore from 'expo-secure-store';
+import NotFound from '../../components/NotFound';
 
 const AnalyticsScreen = () => {
     const [expenses, setExpenses] = useState([]);
@@ -52,6 +53,8 @@ const AnalyticsScreen = () => {
     };
 
     const dataForLineChart = Object.values(totalCategoryWiseExpenses);
+
+    if (expenses.length === 0) return <NotFound text={"Not enough data!"} />;
 
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>

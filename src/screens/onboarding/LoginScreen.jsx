@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, Image, Alert, ActivityIndicator } from 'react-native';
 import { auth } from '../../config/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import * as SecureStore from 'expo-secure-store';
@@ -9,10 +9,12 @@ const LoginScreen = ({ navigation }) => {
 
     const [email, setEmail] = useState('user@gmail.com');
     const [password, setPassword] = useState('password');
+    const [loading, setLoading] = useState(false);
 
     const handleLogin = async () => {
         if (email === '' || password === '') return Alert.alert('Error', 'Please fill in all fields');
 
+        setLoading(true);
         try {
             await signInWithEmailAndPassword(auth, email, password);
 
@@ -21,6 +23,8 @@ const LoginScreen = ({ navigation }) => {
 
         } catch (error) {
             Alert.alert('Error', 'Invalid email or password');
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -47,7 +51,7 @@ const LoginScreen = ({ navigation }) => {
                     onChangeText={(text) => setPassword(text)}
                 />
                 <Pressable style={styles.button} onPress={handleLogin}>
-                    <Text style={styles.buttonText}>Login</Text>
+                    {loading ? <ActivityIndicator color={"#fff"} /> : <Text style={styles.buttonText}>Login</Text>}
                 </Pressable>
                 <View style={styles.loginTextContainer}>
                     <Text style={{}}>Don't have an account?</Text>

@@ -20,28 +20,6 @@ const Stack = createStackNavigator();
 const HomeNavigation = () => {
     const { user } = UseAuth();
 
-    // <NavigationContainer>
-    //     <Stack.Navigator initialRouteName={user ? "Home" : "Welcome"}>
-    //         {!user ? (
-    //             <>
-    //                 <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
-    //                 <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-    //                 <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
-    //             </>
-    //         ) : (
-    //             <>
-    //                 <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-    //                 <Stack.Screen name="Expense" component={ExpenseTrackingScreen} />
-    //                 <Stack.Screen name="Explore" component={ExploreScreen} />
-    //                 <Stack.Screen name="Chat" component={ChatScreen} />
-    //                 <Stack.Screen name="Full Article" component={FullArticleScreen} />
-    //                 <Stack.Screen name="Profile" component={ProfileScreen} />
-    //                 <Stack.Screen name="Analytics" component={AnalyticsScreen} />
-    //             </>
-    //         )}
-    //     </Stack.Navigator>
-    // </NavigationContainer>
-
     if (!user) {
         return (
             <NavigationContainer>

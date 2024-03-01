@@ -84,7 +84,7 @@ const ExpenseTrackerScreen = () => {
                         try {
                             await SecureStore.deleteItemAsync('expenseData');
                             setAllExpenses([]);
-                            console.log('SecureStore cleared successfully');
+                            // console.log('SecureStore cleared successfully');
                             Alert.alert('SecureStore cleared successfully');
                         } catch (error) {
                             console.error('Error clearing SecureStore:', error);
