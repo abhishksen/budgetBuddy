@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import NewsCardComponent from '../../components/NewsCardComponent';
+import { newsApiKey } from '../../../constant';
 
 const ExploreScreen = () => {
     const [news, setNews] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigation = useNavigation();
 
-    const NEWS_API_KEY = 'c908d62e5edd491285c53578aa67b831';
-    //   const NEWS_API_KEY = process.env.NEWS_API_KEY;
+    const NEWS_API_KEY = newsApiKey;
 
     useEffect(() => {
         fetchNews();
