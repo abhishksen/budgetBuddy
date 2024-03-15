@@ -128,14 +128,15 @@ const AnalyticsScreen = () => {
                     }}
                 />
 
-                <ProgressChart
+                {/* progress chart  */}
+                {/* <ProgressChart
                     data={{
-                        // labels: ["Swim", "Bike", "Run"], // optional
+                        labels: Object.keys(totalCategoryWiseExpenses),
                         data: dataForLineChart.length > 0 ? dataForLineChart : [0],
                     }}
                     width={300}
                     height={220}
-                    strokeWidth={6}
+                    strokeWidth={8}
                     radius={20}
                     hideLegend={false}
                     chartConfig={{
@@ -147,7 +148,7 @@ const AnalyticsScreen = () => {
                         marginVertical: 8,
                         borderRadius: 16,
                     }}
-                />
+                /> */}
 
                 {/* Line Chart */}
                 <LineChart
