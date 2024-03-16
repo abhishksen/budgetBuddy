@@ -12,7 +12,7 @@ const RegisterScreen = ({ navigation }) => {
 
     const handleRegister = async () => {
         // function to register a user
-        if (name === '' || email === '' || password === '') return Alert.alert('Error', 'Please fill in all fields');
+        if (name === '' || email === '' || password === '') return Alert.alert('Error', 'All the fields are required.');
 
         setLoading(true);
         try {
