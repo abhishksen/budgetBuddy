@@ -14,6 +14,9 @@ import WelcomeScreen from '../screens/onboarding/WelcomeScreen';
 import LoginScreen from '../screens/onboarding/LoginScreen';
 import RegisterScreen from '../screens/onboarding/RegisterScreen';
 import UseAuth from '../hooks/UseAuth';
+import FinancialCalculatorScreen from '../screens/explore/FinancialCalculatorScreen';
+import EducationalContentScreen from '../screens/explore/EducationalContentScreen';
+import StockMarketInsightsScreen from '../screens/explore/StockMarketInsightsScreen';
 
 const Stack = createStackNavigator();
 
@@ -37,6 +40,9 @@ const HomeNavigation = () => {
                     <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
                     <Stack.Screen name="Expense" component={ExpenseTrackingScreen} />
                     <Stack.Screen name="Explore" component={ExploreScreen} />
+                    <Stack.Screen name="Financial Calculator" component={FinancialCalculatorScreen} />
+                    <Stack.Screen name="Educational Content" component={EducationalContentScreen} />
+                    <Stack.Screen name="Market Insights" component={StockMarketInsightsScreen} />
                     <Stack.Screen name="Chat" component={ChatScreen} />
                     <Stack.Screen name="Full Article" component={FullArticleScreen} />
                     <Stack.Screen name="Profile" component={ProfileScreen} />
