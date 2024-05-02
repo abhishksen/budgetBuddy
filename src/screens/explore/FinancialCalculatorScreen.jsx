@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Modal, Pressable } from 'react-native';
+import FormulaInfoPopup from '../../components/FormulaInfoPopup';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const FinancialCalculatorScreen = () => {
     const [principal, setPrincipal] = useState('');
@@ -8,6 +10,7 @@ const FinancialCalculatorScreen = () => {
     const [compoundFrequency, setCompoundFrequency] = useState('annually');
     const [result, setResult] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
+    const [formulaPopupVisible, setFormulaPopupVisible] = useState(false);
 
     const calculateLoanPayment = () => {
         if (!validateInput()) return;
@@ -25,11 +28,12 @@ const FinancialCalculatorScreen = () => {
         if (!validateInput()) return;
 
         const p = parseFloat(principal);
-        const r = parseFloat(interestRate) / 100;
+        const r = parseFloat(interestRate);
         const t = parseFloat(timePeriod);
 
         const interest = (p * r * t) / 100;
-        setResult(`Simple Interest: ₹${interest.toFixed(2)}`);
+        const futureValue = p + interest;
+        setResult(`Simple Interest: ₹${interest.toFixed(2)} (Total Amount: ₹${futureValue.toFixed(2)})`);
         toggleModal();
     };
 
@@ -41,7 +45,7 @@ const FinancialCalculatorScreen = () => {
         const n = getCompoundingFrequency(compoundFrequency);
         const t = parseFloat(timePeriod);
 
-        const futureValue = p * Math.pow(1 + r / n, n * t);
+        const futureValue = p * Math.pow((1 + (r / n)), n * t);
         const interest = futureValue - p;
         setResult(`Compound Interest: ₹${interest.toFixed(2)} (Future Value: ₹${futureValue.toFixed(2)})`);
         toggleModal();
@@ -99,14 +103,22 @@ const FinancialCalculatorScreen = () => {
         setInterestRate('');
         setTimePeriod('');
         setCompoundFrequency('annually');
+        setResult('');
     };
 
     const toggleModal = () => {
         setModalVisible(!modalVisible);
     };
 
+    const toggleFormulaPopup = () => {
+        setFormulaPopupVisible(!formulaPopupVisible);
+    };
+
     return (
         <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+            <TouchableOpacity style={styles.infoButton} onPress={toggleFormulaPopup}>
+                <MaterialIcons name="info" size={24} color="#FF5722" />
+            </TouchableOpacity>
             <View style={styles.inputContainer}>
                 <Text style={styles.label}>Principal Amount (₹)</Text>
                 <TextInput
@@ -148,7 +160,7 @@ const FinancialCalculatorScreen = () => {
                     <TouchableOpacity
                         style={[styles.radioButton, compoundFrequency === 'semiannually' && styles.radioButtonSelected]}
                         onPress={() => setCompoundFrequency('semiannually')}>
-                        <Text style={styles.radioButtonText}>Semiannually</Text>
+                        <Text style={styles.radioButtonText}>Half Yearly</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.radioButton, compoundFrequency === 'quarterly' && styles.radioButtonSelected]}
@@ -177,9 +189,9 @@ const FinancialCalculatorScreen = () => {
             <TouchableOpacity style={styles.button} onPress={calculateInstallment}>
                 <Text style={styles.buttonText}>Calculate Installment</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.clearButton} onPress={clearInputs}>
+            {result && (<TouchableOpacity style={styles.clearButton} onPress={clearInputs}>
                 <Text style={styles.buttonText}>Clear Inputs</Text>
-            </TouchableOpacity>
+            </TouchableOpacity>)}
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -196,6 +208,7 @@ const FinancialCalculatorScreen = () => {
                     </View>
                 </View>
             </Modal>
+            <FormulaInfoPopup visible={formulaPopupVisible} onClose={toggleFormulaPopup} />
         </ScrollView>
     );
 };
@@ -240,6 +253,7 @@ const styles = StyleSheet.create({
     },
     radioButtonSelected: {
         backgroundColor: '#4CAF50',
+        borderColor: '#4CAF50',
     },
     radioButtonText: {
         color: '#333',
@@ -263,6 +277,17 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         textAlign: 'center',
+    },
+    infoButton: {
+        position: 'absolute',
+        top: 6,
+        right: 16,
+        width: 35,
+        height: 35,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1,
     },
     result: {
         fontSize: 18,
