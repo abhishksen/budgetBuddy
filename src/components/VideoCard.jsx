@@ -1,9 +1,9 @@
-// VideoCard.js
 import React from 'react';
 import { View, Text, TouchableOpacity, ImageBackground, StyleSheet, Linking } from 'react-native';
-import { WebView } from 'react-native-webview';
 
 const VideoCard = ({ video }) => {
+
+    // directly open the video in the YouTube app
     const openVideo = () => {
         const videoId = video.id.videoId;
         const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
@@ -11,7 +11,7 @@ const VideoCard = ({ video }) => {
     };
 
     return (
-        <TouchableOpacity style={styles.container} onPress={openVideo}>
+        <View style={styles.container}>
             <ImageBackground
                 source={{ uri: video.snippet.thumbnails.medium.url }}
                 style={styles.thumbnail}
@@ -26,7 +26,7 @@ const VideoCard = ({ video }) => {
                     </View>
                 </View>
             </ImageBackground>
-        </TouchableOpacity>
+        </View>
     );
 };
 
