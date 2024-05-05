@@ -1,25 +1,27 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity, SafeAreaView, TextInput, Pressable } from 'react-native';
 import VideoCard from '../../components/VideoCard';
-import { youtubeApiKey } from '../../../constant';
+import { newsApiKey, youtubeApiKey } from '../../../constant';
 import VideoPopup from '../../components/VideoPopup';
-
-// Mock data for articles
-const articles = [
-    { id: 1, title: '10 Tips for Saving Money', description: 'Learn how to save money with these practical tips.', author: 'John Doe' },
-    { id: 2, title: 'Understanding Credit Scores', description: 'What is a credit score and how does it affect your financial health?', author: 'Jane Smith' },
-];
+import NewsCardComponent from '../../components/NewsCardComponent';
+import { useNavigation } from '@react-navigation/native';
+import Fontawesome from 'react-native-vector-icons/FontAwesome';
 
 const EducationalContentScreen = () => {
 
     const [videos, setVideos] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [selectedVideoId, setSelectedVideoId] = useState(null);
+    const [news, setNews] = useState([]);
+
+    const navigation = useNavigation();
 
     useEffect(() => {
         fetchVideos();
-    }, []);
+        fetchNews();
+    }, [searchQuery]);
 
     const fetchVideos = async () => {
         try {
@@ -29,7 +31,8 @@ const EducationalContentScreen = () => {
                     params: {
                         key: youtubeApiKey,
                         part: 'snippet',
-                        q: 'Marvel',
+                        // q: 'finance',
+                        q: searchQuery ? searchQuery : 'finance',
                         maxResults: 15,
                         type: 'video',
                     },
@@ -52,6 +55,28 @@ const EducationalContentScreen = () => {
     };
 
 
+    const fetchNews = async () => {
+        try {
+            const response = await axios.get(
+                `https://newsapi.org/v2/top-headlines?category=business&country=in&apiKey=${newsApiKey}`
+            );
+
+            setNews(response.data.articles);
+        } catch (error) {
+            console.error('Error fetching news:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handlePress = (article) => {
+        navigation.navigate('Full Article', { article });
+    }
+
+    const handleSearch = async () => {
+        console.log('searching for:', searchQuery);
+        // setIsLoading(true);
+    }
 
     if (isLoading) {
         return (
@@ -61,8 +86,23 @@ const EducationalContentScreen = () => {
         );
     }
 
+    console.log('query:', searchQuery);
+
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <SafeAreaView style={styles.container}>
+
+            {/* search box */}
+            <View style={styles.searchBox} >
+                <TextInput
+                    style={styles.searchInput}
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    placeholder="Search for a topic"
+                />
+                <Pressable style={styles.btn} onPress={handleSearch}>
+                    <Fontawesome name="search" size={24} color="#fff" />
+                </Pressable>
+            </View>
 
             {/* videos section */}
             <View style={styles.videoContainer}>
@@ -74,56 +114,63 @@ const EducationalContentScreen = () => {
                     ))}
                 </ScrollView>
             </View>
+
             {selectedVideoId && (
                 <VideoPopup videoId={selectedVideoId} onClose={closeVideoPopup} />
             )}
 
             {/* article section */}
-            {articles.map(article => (
-                <View key={article.id} style={styles.articleCard}>
-                    <Text style={styles.articleTitle}>{article.title}</Text>
-                    <Text style={styles.articleDescription}>{article.description}</Text>
-                    <Text style={styles.articleAuthor}>By {article.author}</Text>
-                </View>
-            ))}
+            <View style={styles.articleContainer}>
+                <Text style={styles.title}>Today's Top Headlines</Text>
+                <ScrollView style={{ marginTop: 10 }} showsVerticalScrollIndicator={false}>
+                    {news.map((article, index) => (
+                        <NewsCardComponent key={index} article={article} onPress={handlePress} />
+                    ))}
+                </ScrollView>
+            </View>
 
-        </ScrollView>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
         paddingHorizontal: 20,
+    },
+    searchBox: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 16,
+    },
+    searchInput: {
+        flex: 1,
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        marginRight: 10,
+        fontSize: 16,
+    },
+    btn: {
+        backgroundColor: '#8BC34A',
+        padding: 10,
+        borderRadius: 10,
     },
     title: {
         fontSize: 20,
+        color: '#111',
+        textAlign: 'center',
         fontWeight: 'bold',
-        color: '#8BC34A',
-        paddingBottom: 16,
+        marginBottom: 10,
+        textDecorationLine: 'underline',
     },
     videoContainer: {
         paddingVertical: 10,
     },
-    articleCard: {
-        backgroundColor: '#f0f0f0',
-        padding: 20,
-        marginBottom: 10,
-        borderRadius: 10,
-    },
-    articleTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 5,
-    },
-    articleDescription: {
-        fontSize: 16,
-        marginBottom: 5,
-    },
-    articleAuthor: {
-        fontSize: 14,
-        color: '#666',
+    articleContainer: {
+        flex: 1,
+        paddingVertical: 10,
     },
 });
 

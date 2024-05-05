@@ -28,7 +28,7 @@ const FullArticleScreen = ({ route }) => {
                         <ActivityIndicator size="large" color="#8BC34A" style={styles.spinner} />
                     </View >
                 ) : (
-                    <ScrollView style={styles.container}>
+                    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
                         <Image
                             source={article.urlToImage ? { uri: article.urlToImage } : require('../../../assets/img/placeholder.jpeg')}
                             style={styles.image}
@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         padding: 16,
+        marginHorizontal: 20,
     },
     title: {
         fontSize: 24,
@@ -79,7 +80,8 @@ const styles = StyleSheet.create({
     },
     source: {
         fontSize: 14,
-        color: '#888',
+        fontWeight: 'bold',
+        color: '#444',
         marginBottom: 8,
     },
     description: {

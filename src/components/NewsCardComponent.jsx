@@ -23,7 +23,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginVertical: 8,
         overflow: 'hidden',
-        elevation: 2,
         backgroundColor: '#fff',
     },
     image: {
@@ -31,7 +30,7 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     content: {
-        padding: 16,
+        padding: 20,
     },
     title: {
         fontSize: 16,
