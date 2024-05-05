@@ -41,7 +41,7 @@ const HomeNavigation = () => {
                     <Stack.Screen name="Expense" component={ExpenseTrackingScreen} />
                     <Stack.Screen name="Explore" component={ExploreScreen} />
                     <Stack.Screen name="Financial Calculator" component={FinancialCalculatorScreen} />
-                    <Stack.Screen name="Educational Content" component={EducationalContentScreen} />
+                    <Stack.Screen name="Educational Content" component={EducationalContentScreen} options={{ headerTitle: 'Videos & Articles' }} />
                     <Stack.Screen name="Market Insights" component={StockMarketInsightsScreen} />
                     <Stack.Screen name="Chat" component={ChatScreen} />
                     <Stack.Screen name="Full Article" component={FullArticleScreen} />

@@ -77,7 +77,6 @@ const ExploreScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // paddingHorizontal: 16,
         backgroundColor: '#fff',
     },
     articleContainer: {
@@ -105,9 +104,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        // marginVertical: 10,
         paddingHorizontal: 16,
-        paddingVertical: 10,
+        paddingVertical: 6,
     },
 });
 
