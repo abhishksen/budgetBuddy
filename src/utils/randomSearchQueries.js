@@ -1,0 +1,22 @@
+export const randomSearchQueries = [
+    "College budgeting tips",
+    "Part-time jobs with flexible hours for students",
+    "Scholarships for computer science majors",
+    "Managing student loans effectively",
+    "Budget-friendly student meals",
+    "Understanding credit reports",
+    "Balancing work, study, and social life",
+    "Financial planning for studying abroad",
+    "Managing finances with roommates",
+    "Student loan forgiveness programs",
+    "Budgeting for a semester abroad",
+    "How to save money on textbooks",
+    "Creative ways to save money",
+    "Building good financial habits",
+    "Free tax filing services for students",
+    "Financial planning for a gap year",
+    "Investing basics for college students",
+    "Finding affordable student housing",
+    "Financial aid options for graduate students",
+    "Saving for retirement as a student"
+];

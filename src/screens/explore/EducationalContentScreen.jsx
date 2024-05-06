@@ -7,6 +7,7 @@ import VideoPopup from '../../components/VideoPopup';
 import NewsCardComponent from '../../components/NewsCardComponent';
 import { useNavigation } from '@react-navigation/native';
 import Fontawesome from 'react-native-vector-icons/FontAwesome';
+import { randomSearchQueries } from '../../utils/randomSearchQueries';
 
 const EducationalContentScreen = () => {
 
@@ -21,7 +22,10 @@ const EducationalContentScreen = () => {
     useEffect(() => {
         fetchVideos();
         fetchNews();
-    }, [searchQuery]);
+    }, []);
+
+
+    const randomSearchQuery = randomSearchQueries[Math.floor(Math.random() * randomSearchQueries.length)];
 
     const fetchVideos = async () => {
         try {
@@ -31,8 +35,7 @@ const EducationalContentScreen = () => {
                     params: {
                         key: youtubeApiKey,
                         part: 'snippet',
-                        // q: 'finance',
-                        q: searchQuery ? searchQuery : 'finance',
+                        q: randomSearchQuery,
                         maxResults: 15,
                         type: 'video',
                     },
@@ -74,9 +77,49 @@ const EducationalContentScreen = () => {
     }
 
     const handleSearch = async () => {
-        console.log('searching for:', searchQuery);
-        // setIsLoading(true);
+        if (!searchQuery) return alert('Please enter a search query');
+        // Reset videos and news before fetching new search results
+        setVideos([]);
+        setNews([]);
+        setIsLoading(true);
+        try {
+            // Fetch videos based on search query
+            const videoResponse = await axios.get(
+                'https://www.googleapis.com/youtube/v3/search',
+                {
+                    params: {
+                        key: youtubeApiKey,
+                        part: 'snippet',
+                        q: searchQuery,
+                        maxResults: 10,
+                        type: 'video',
+                    },
+                }
+            );
+            setVideos(videoResponse.data.items);
+
+            const newsResponse = await axios.get(
+                `https://newsapi.org/v2/everything`,
+                {
+                    params: {
+                        q: searchQuery,
+                        apiKey: newsApiKey,
+                        language: 'en',
+                        country: 'in',
+                        sortBy: 'publishedAt',
+                        pageSize: 10,
+                    }
+                }
+            );
+            setNews(newsResponse.data.articles);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setIsLoading(false);
+            setSearchQuery('');
+        }
     }
+
 
     if (isLoading) {
         return (
@@ -85,8 +128,6 @@ const EducationalContentScreen = () => {
             </View>
         );
     }
-
-    console.log('query:', searchQuery);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -121,7 +162,7 @@ const EducationalContentScreen = () => {
 
             {/* article section */}
             <View style={styles.articleContainer}>
-                <Text style={styles.title}>Today's Top Headlines</Text>
+                {/* <Text style={styles.title}>Today's Top Headlines</Text> */}
                 <ScrollView style={{ marginTop: 10 }} showsVerticalScrollIndicator={false}>
                     {news.map((article, index) => (
                         <NewsCardComponent key={index} article={article} onPress={handlePress} />
@@ -142,6 +183,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 16,
+        marginBottom: 10,
     },
     searchInput: {
         flex: 1,
