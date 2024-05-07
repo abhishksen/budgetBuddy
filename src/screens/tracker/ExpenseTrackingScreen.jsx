@@ -1,8 +1,10 @@
+
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, FlatList, SafeAreaView, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as SecureStore from 'expo-secure-store';
+import { Picker } from '@react-native-picker/picker';
 
 const ExpenseTrackerScreen = () => {
     const [expenseAmount, setExpenseAmount] = useState('');
@@ -96,20 +98,26 @@ const ExpenseTrackerScreen = () => {
         );
     };
 
+    // Predefined options for expense category
+    const expenseCategories = [
+        { label: 'Select Expense Category', value: '', color: '' },
+        { label: 'Food', value: 'food', color: '#3498db' },
+        { label: 'Travel', value: 'travel', color: '#9b59b6' },
+        { label: 'Medical', value: 'medical', color: '#e74c3c' },
+        { label: 'Education', value: 'education', color: '#f1c40f' },
+        { label: 'Shopping', value: 'shopping', color: '#e67e22' },
+        { label: 'Bills', value: 'bills', color: '#e74c3c' },
+        { label: 'Entertainment', value: 'entertainment', color: '#f1c40f' },
+        { label: 'Misc', value: 'misc', color: '#2ecc71' },
+        { label: 'Others', value: 'others', color: '#1abc9c' },
+    ];
+
     // for setting color by category
     const setColorByCategory = (category) => {
         const trimmedCategory = category.trim().toLowerCase();
 
-        if (trimmedCategory === 'food') return '#3498db';
-        else if (trimmedCategory === 'travel') return '#9b59b6';
-        else if (trimmedCategory === 'medical') return '#e74c3c';
-        else if (trimmedCategory === 'education') return '#f1c40f';
-        else if (trimmedCategory === 'shopping') return '#e67e22';
-        else if (trimmedCategory === 'bills') return '#e74c3c';
-        else if (trimmedCategory === 'entertainment') return '#f1c40f';
-        else if (trimmedCategory === 'misc') return '#2ecc71';
-        else if (trimmedCategory === 'others') return '#1abc9c';
-        else return '#2c3e50';
+        const categoryObj = expenseCategories.find(cat => cat.value === trimmedCategory);
+        return categoryObj ? categoryObj.color : '#2c3e50';
     };
 
     return (
@@ -124,12 +132,18 @@ const ExpenseTrackerScreen = () => {
                     setExpenseAmount(amount);
                 }}
             />
-            <TextInput
-                style={styles.input}
-                placeholder="Expense Category"
-                value={expenseCategory}
-                onChangeText={(text) => setExpenseCategory(text)}
-            />
+            {/* Dropdown for Expense Category */}
+            <View style={styles.categoryInput}>
+                <Picker
+                    selectedValue={expenseCategory}
+                    style={styles.picker}
+                    onValueChange={(itemValue) => setExpenseCategory(itemValue)}
+                >
+                    {expenseCategories.map((category, index) => (
+                        <Picker.Item key={index} label={category.label} value={category.value} />
+                    ))}
+                </Picker>
+            </View>
 
             <Pressable
                 style={[styles.input, styles.datePickerButton]}
@@ -145,6 +159,7 @@ const ExpenseTrackerScreen = () => {
                     value={expenseDate}
                     mode="date"
                     display="default"
+                    maximumDate={new Date()} // Set maximum date to current date
                     onChange={handleDateChange}
                 />
             )}
@@ -204,14 +219,30 @@ const styles = StyleSheet.create({
         height: 40,
         borderColor: '#2C3E50',
         borderBottomWidth: 1,
+        marginBottom: 14,
+        paddingHorizontal: 16,
+        color: '#333',
+    },
+    categoryInput: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        height: 40,
+        borderColor: '#2C3E50',
+        borderBottomWidth: 1,
         marginBottom: 12,
-        paddingHorizontal: 8,
+        color: '#2C3E50',
+    },
+    picker: {
+        flex: 1,
+        height: 40,
         color: '#2C3E50',
     },
     textArea: {
         height: 80,
         paddingHorizontal: 8,
         paddingVertical: 8,
+        paddingLeft: 16,
         textAlignVertical: 'top',
     },
     datePickerButton: {
@@ -280,5 +311,4 @@ const styles = StyleSheet.create({
 });
 
 export default ExpenseTrackerScreen;
-
 
