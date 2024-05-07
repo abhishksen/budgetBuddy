@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Image, Alert, ActivityIndicator } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { auth } from '../../config/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import * as SecureStore from 'expo-secure-store';
@@ -30,11 +31,15 @@ const LoginScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            <LinearGradient
+                colors={['#8BC34A', '#4CAF50', '#00796B']}
+                style={styles.gradient}
+            />
             <View style={styles.imgContainer}>
                 <Image source={require('../../../assets/img/logo.png')} style={styles.image} resizeMode="contain" />
             </View>
             <View style={styles.formContainer}>
-                <Text style={styles.title}>Login to Your Account</Text>
+                <Text style={styles.title}>Please login to continue</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Email"
@@ -42,6 +47,7 @@ const LoginScreen = ({ navigation }) => {
                     autoCapitalize="none"
                     value={email}
                     onChangeText={(text) => setEmail(text)}
+                    placeholderTextColor="#FFFFFF"
                 />
                 <TextInput
                     style={styles.input}
@@ -49,14 +55,15 @@ const LoginScreen = ({ navigation }) => {
                     secureTextEntry
                     value={password}
                     onChangeText={(text) => setPassword(text)}
+                    placeholderTextColor="#FFFFFF"
                 />
                 <Pressable style={styles.button} onPress={handleLogin}>
-                    {loading ? <ActivityIndicator color={"#fff"} /> : <Text style={styles.buttonText}>Login</Text>}
+                    {loading ? <ActivityIndicator color={"#8BC34A"} /> : <Text style={styles.buttonText}>Login</Text>}
                 </Pressable>
-                <View style={styles.loginTextContainer}>
-                    <Text style={{}}>Don't have an account?</Text>
-                    <Pressable style={styles.loginLink} onPress={() => navigation.navigate('Register')}>
-                        <Text style={styles.loginText}>Register here</Text>
+                <View style={styles.registerTextContainer}>
+                    <Text style={styles.registerText}>Don't have an account?</Text>
+                    <Pressable onPress={() => navigation.navigate('Register')}>
+                        <Text style={[styles.registerText, styles.registerLink]}>Register here</Text>
                     </Pressable>
                 </View>
             </View>
@@ -69,7 +76,13 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 16,
+    },
+    gradient: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        height: '100%',
     },
     imgContainer: {
         width: '100%',
@@ -90,18 +103,19 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
+        color: '#FFFFFF',
     },
     input: {
-        height: 40,
+        height: 50,
         width: '100%',
-        borderColor: '#2C3E50',
-        borderBottomWidth: 1,
-        marginBottom: 16,
-        paddingHorizontal: 8,
-        color: '#2C3E50',
+        backgroundColor: 'rgba(255, 255, 255, 0.3)',
+        borderRadius: 10,
+        paddingLeft: 15,
+        marginBottom: 14,
+        color: '#FFFFFF',
     },
     button: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: '#FFFFFF',
         width: '100%',
         textAlign: 'center',
         alignItems: 'center',
@@ -111,23 +125,23 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     buttonText: {
-        color: '#fff',
+        color: '#4CAF50',
         fontSize: 16,
         fontWeight: 'bold',
     },
-    loginTextContainer: {
+    registerTextContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 16,
     },
-    loginLink: {
-        marginLeft: 8,
-    },
-    loginText: {
-        color: '#4CAF50',
-        fontWeight: 'bold',
+    registerText: {
+        color: '#FFFFFF',
         fontSize: 14,
+    },
+    registerLink: {
+        marginLeft: 5,
+        textDecorationLine: 'underline',
     },
 });
 

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Image, Alert, ActivityIndicator } from 'react-native';
 import { auth } from '../../config/firebase';
 import * as SecureStore from 'expo-secure-store';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const RegisterScreen = ({ navigation }) => {
     const [name, setName] = useState('');
@@ -31,6 +32,10 @@ const RegisterScreen = ({ navigation }) => {
     }
     return (
         <View style={styles.container}>
+            <LinearGradient
+                colors={['#8BC34A', '#4CAF50', '#00796B']}
+                style={styles.gradient}
+            />
             <View style={styles.imgContainer}>
                 <Image source={require('../../../assets/img/logo.png')} style={styles.image} resizeMode="contain" />
             </View>
@@ -41,6 +46,7 @@ const RegisterScreen = ({ navigation }) => {
                     placeholder="Full Name"
                     value={name}
                     onChangeText={(text) => setName(text)}
+                    placeholderTextColor="#FFFFFF"
                 />
                 <TextInput
                     style={styles.input}
@@ -49,6 +55,7 @@ const RegisterScreen = ({ navigation }) => {
                     autoCapitalize="none"
                     value={email}
                     onChangeText={(text) => setEmail(text)}
+                    placeholderTextColor="#FFFFFF"
                 />
                 <TextInput
                     style={styles.input}
@@ -56,14 +63,15 @@ const RegisterScreen = ({ navigation }) => {
                     secureTextEntry
                     value={password}
                     onChangeText={(text) => setPassword(text)}
+                    placeholderTextColor="#FFFFFF"
                 />
                 <Pressable style={styles.button} onPress={handleRegister}>
-                    {loading ? <ActivityIndicator color={"#fff"} /> : <Text style={styles.buttonText}>Register</Text>}
+                    {loading ? <ActivityIndicator color={"#8BC34A"} /> : <Text style={styles.buttonText}>Register</Text>}
                 </Pressable>
                 <View style={styles.loginTextContainer}>
-                    <Text style={{}}>Already have an account?</Text>
+                    <Text style={styles.loginText}>Already have an account?</Text>
                     <Pressable style={styles.loginLink} onPress={() => navigation.navigate('Login')}>
-                        <Text style={styles.loginText}>Login here</Text>
+                        <Text style={[styles.loginText, styles.loginLinkText]}>Login here</Text>
                     </Pressable>
                 </View>
             </View>
@@ -76,7 +84,13 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 16,
+    },
+    gradient: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        height: '100%',
     },
     imgContainer: {
         width: '100%',
@@ -97,18 +111,19 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
+        color: '#FFFFFF',
     },
     input: {
-        height: 40,
+        height: 50,
         width: '100%',
-        borderColor: '#2C3E50',
-        borderBottomWidth: 1,
-        marginBottom: 16,
-        paddingHorizontal: 8,
-        color: '#2C3E50',
+        backgroundColor: 'rgba(255, 255, 255, 0.3)',
+        borderRadius: 10,
+        paddingLeft: 15,
+        marginBottom: 14,
+        color: '#FFFFFF',
     },
     button: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: '#FFFFFF',
         width: '100%',
         textAlign: 'center',
         alignItems: 'center',
@@ -118,7 +133,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     buttonText: {
-        color: '#fff',
+        color: '#4CAF50',
         fontSize: 16,
         fontWeight: 'bold',
     },
@@ -128,13 +143,16 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginTop: 16,
     },
+    loginText: {
+        color: '#FFFFFF',
+        fontWeight: 'bold',
+        fontSize: 14,
+    },
     loginLink: {
         marginLeft: 8,
     },
-    loginText: {
-        color: '#4CAF50',
-        fontWeight: 'bold',
-        fontSize: 14,
+    loginLinkText: {
+        textDecorationLine: 'underline',
     },
 });
 

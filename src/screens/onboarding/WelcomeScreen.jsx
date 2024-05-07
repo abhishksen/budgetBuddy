@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 
@@ -14,6 +15,10 @@ const WelcomeScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            <LinearGradient
+                colors={['#8BC34A', '#4CAF50', '#00796B']}
+                style={styles.gradient}
+            />
             <Image
                 source={require('../../../assets/img/logo.png')}
                 style={styles.image}
@@ -26,9 +31,6 @@ const WelcomeScreen = ({ navigation }) => {
             <Pressable style={styles.button} onPress={handleGetStarted}>
                 <Text style={styles.buttonText}>Get Started</Text>
             </Pressable>
-            {/* <Pressable style={styles.skipLink} onPress={handleSkip}>
-                <Text style={styles.skipText}>Skip</Text>
-            </Pressable> */}
         </View>
     );
 };
@@ -38,11 +40,17 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 16,
-        backgroundColor: '#4CAF50', // Set your desired background color
+        paddingHorizontal: 16,
+    },
+    gradient: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        height: '100%',
     },
     image: {
-        height: 200, // Adjust the height as needed
+        height: 200,
         marginBottom: 20,
     },
     title: {
@@ -50,18 +58,18 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 10,
         textAlign: 'center',
-        color: '#fff',
+        color: '#FFFFFF',
     },
     subtitle: {
         fontSize: 16,
         textAlign: 'center',
-        color: '#fff',
+        color: '#FFFFFF',
         marginBottom: 20,
     },
     button: {
         width: '100%',
         alignItems: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: '#FFFFFF',
         borderRadius: 8,
         paddingVertical: 12,
         paddingHorizontal: 24,
@@ -70,16 +78,6 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 16,
         color: '#4CAF50',
-        fontWeight: 'bold',
-    },
-    skipLink: {
-        position: 'absolute',
-        bottom: 16,
-        right: 16,
-    },
-    skipText: {
-        fontSize: 16,
-        color: '#fff', // Set the color based on your color scheme
         fontWeight: 'bold',
     },
 });
