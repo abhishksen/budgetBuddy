@@ -1,30 +1,50 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Modal, Pressable } from 'react-native';
-import FormulaInfoPopup from '../../components/FormulaInfoPopup';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import React, { useState, useCallback } from "react";
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    ScrollView,
+    StyleSheet,
+    Modal,
+    Pressable,
+} from "react-native";
+import FormulaInfoPopup from "../../components/FormulaInfoPopup";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { Picker } from "@react-native-picker/picker";
 
 const FinancialCalculatorScreen = () => {
-    const [principal, setPrincipal] = useState('');
-    const [interestRate, setInterestRate] = useState('');
-    const [timePeriod, setTimePeriod] = useState('');
-    const [compoundFrequency, setCompoundFrequency] = useState('annually');
-    const [result, setResult] = useState('');
+    const [principal, setPrincipal] = useState("");
+    const [interestRate, setInterestRate] = useState("");
+    const [timePeriod, setTimePeriod] = useState("");
+    const [compoundFrequency, setCompoundFrequency] = useState("annually");
+    const [result, setResult] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
     const [formulaPopupVisible, setFormulaPopupVisible] = useState(false);
+    const [selectedFunction, setSelectedFunction] = useState("type");
 
-    const calculateLoanPayment = () => {
+    const handleFunctionChange = (functionName) => {
+        setSelectedFunction(functionName);
+    };
+
+    const calculate = () => {
+        functions[selectedFunction].calculate();
+    };
+
+    const calculateLoanPayment = useCallback(() => {
         if (!validateInput()) return;
 
         const p = parseFloat(principal);
         const r = parseFloat(interestRate) / 100 / 12; // Monthly interest rate
         const n = parseFloat(timePeriod) * 12; // Number of payments
 
-        const monthlyPayment = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+        const monthlyPayment =
+            (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
         setResult(`Monthly Payment: ₹${monthlyPayment.toFixed(2)}`);
         toggleModal();
-    };
+    }, [principal, interestRate, timePeriod]);
 
-    const calculateSimpleInterest = () => {
+    const calculateSimpleInterest = useCallback(() => {
         if (!validateInput()) return;
 
         const p = parseFloat(principal);
@@ -33,11 +53,15 @@ const FinancialCalculatorScreen = () => {
 
         const interest = (p * r * t) / 100;
         const futureValue = p + interest;
-        setResult(`Simple Interest: ₹${interest.toFixed(2)} (Total Amount: ₹${futureValue.toFixed(2)})`);
+        setResult(
+            `Simple Interest: ₹${interest.toFixed(
+                2
+            )} (Total Amount: ₹${futureValue.toFixed(2)})`
+        );
         toggleModal();
-    };
+    }, [principal, interestRate, timePeriod]);
 
-    const calculateCompoundInterest = () => {
+    const calculateCompoundInterest = useCallback(() => {
         if (!validateInput()) return;
 
         const p = parseFloat(principal);
@@ -45,13 +69,17 @@ const FinancialCalculatorScreen = () => {
         const n = getCompoundingFrequency(compoundFrequency);
         const t = parseFloat(timePeriod);
 
-        const futureValue = p * Math.pow((1 + (r / n)), n * t);
+        const futureValue = p * Math.pow(1 + r / n, n * t);
         const interest = futureValue - p;
-        setResult(`Compound Interest: ₹${interest.toFixed(2)} (Future Value: ₹${futureValue.toFixed(2)})`);
+        setResult(
+            `Compound Interest: ₹${interest.toFixed(
+                2
+            )} (Future Value: ₹${futureValue.toFixed(2)})`
+        );
         toggleModal();
-    };
+    }, [principal, interestRate, timePeriod, compoundFrequency]);
 
-    const calculateSavingsGrowth = () => {
+    const calculateSavingsGrowth = useCallback(() => {
         if (!validateInput()) return;
 
         const p = parseFloat(principal);
@@ -61,9 +89,9 @@ const FinancialCalculatorScreen = () => {
         const futureValue = p * Math.pow(1 + r, t);
         setResult(`Savings Growth: ₹${futureValue.toFixed(2)}`);
         toggleModal();
-    };
+    }, [principal, interestRate, timePeriod]);
 
-    const calculateInstallment = () => {
+    const calculateInstallment = useCallback(() => {
         if (!validateInput()) return;
 
         const p = parseFloat(principal);
@@ -73,52 +101,84 @@ const FinancialCalculatorScreen = () => {
         const installment = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
         setResult(`Monthly Installment: ₹${installment.toFixed(2)}`);
         toggleModal();
-    };
+    }, [principal, interestRate, timePeriod]);
 
-    const validateInput = () => {
+    const validateInput = useCallback(() => {
         if (!principal.trim() || !interestRate.trim() || !timePeriod.trim()) {
-            alert('All fields are required');
+            alert("All fields are required");
             return false;
         }
         return true;
-    };
+    }, [principal, interestRate, timePeriod]);
 
-    const getCompoundingFrequency = (frequency) => {
+    const getCompoundingFrequency = useCallback((frequency) => {
         switch (frequency) {
-            case 'annually':
+            case "annually":
                 return 1;
-            case 'semiannually':
+            case "semiannually":
                 return 2;
-            case 'quarterly':
+            case "quarterly":
                 return 4;
-            case 'monthly':
+            case "monthly":
                 return 12;
             default:
                 return 1;
         }
-    };
+    }, []);
 
-    const clearInputs = () => {
-        setPrincipal('');
-        setInterestRate('');
-        setTimePeriod('');
-        setCompoundFrequency('annually');
-        setResult('');
-    };
+    const clearInputs = useCallback(() => {
+        setPrincipal("");
+        setInterestRate("");
+        setTimePeriod("");
+        setCompoundFrequency("annually");
+        setSelectedFunction("type");
+        setResult("");
+    }, []);
 
-    const toggleModal = () => {
+    const toggleModal = useCallback(() => {
         setModalVisible(!modalVisible);
-    };
+    }, [modalVisible]);
 
-    const toggleFormulaPopup = () => {
+    const toggleFormulaPopup = useCallback(() => {
         setFormulaPopupVisible(!formulaPopupVisible);
+    }, [formulaPopupVisible]);
+
+    const functions = {
+        type: {
+            label: "Select Calculator",
+            calculate: () => { alert("Select Calculator!") }
+        },
+        loanPayment: {
+            label: "Loan Payment",
+            calculate: calculateLoanPayment,
+        },
+        simpleInterest: {
+            label: "Simple Interest",
+            calculate: calculateSimpleInterest,
+        },
+        compoundInterest: {
+            label: "Compound Interest",
+            calculate: calculateCompoundInterest,
+        },
+        savingsGrowth: {
+            label: "Savings Growth",
+            calculate: calculateSavingsGrowth,
+        },
+        installment: {
+            label: "Installment",
+            calculate: calculateInstallment,
+        },
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+        <ScrollView
+            contentContainerStyle={styles.container}
+            showsVerticalScrollIndicator={false}
+        >
             <TouchableOpacity style={styles.infoButton} onPress={toggleFormulaPopup}>
                 <MaterialIcons name="info" size={24} color="#FF5722" />
             </TouchableOpacity>
+
             <View style={styles.inputContainer}>
                 <Text style={styles.label}>Principal Amount (₹)</Text>
                 <TextInput
@@ -129,6 +189,7 @@ const FinancialCalculatorScreen = () => {
                     onChangeText={(text) => setPrincipal(text)}
                 />
             </View>
+
             <View style={styles.inputContainer}>
                 <Text style={styles.label}>Interest Rate (%)</Text>
                 <TextInput
@@ -139,6 +200,7 @@ const FinancialCalculatorScreen = () => {
                     onChangeText={(text) => setInterestRate(text)}
                 />
             </View>
+
             <View style={styles.inputContainer}>
                 <Text style={styles.label}>Time Period (Years)</Text>
                 <TextInput
@@ -149,49 +211,54 @@ const FinancialCalculatorScreen = () => {
                     onChangeText={(text) => setTimePeriod(text)}
                 />
             </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+
+            {selectedFunction == "compoundInterest" && (
                 <View style={styles.radioGroup}>
-                    <Text style={styles.radioLabel}>Compound Frequency:</Text>
-                    <TouchableOpacity
-                        style={[styles.radioButton, compoundFrequency === 'annually' && styles.radioButtonSelected]}
-                        onPress={() => setCompoundFrequency('annually')}>
-                        <Text style={styles.radioButtonText}>Annually</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.radioButton, compoundFrequency === 'semiannually' && styles.radioButtonSelected]}
-                        onPress={() => setCompoundFrequency('semiannually')}>
-                        <Text style={styles.radioButtonText}>Half Yearly</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.radioButton, compoundFrequency === 'quarterly' && styles.radioButtonSelected]}
-                        onPress={() => setCompoundFrequency('quarterly')}>
-                        <Text style={styles.radioButtonText}>Quarterly</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.radioButton, compoundFrequency === 'monthly' && styles.radioButtonSelected]}
-                        onPress={() => setCompoundFrequency('monthly')}>
-                        <Text style={styles.radioButtonText}>Monthly</Text>
-                    </TouchableOpacity>
+                    <Text style={styles.label}>Compound Frequency:</Text>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                        {["annually", "semiannually", "quarterly", "monthly"].map(
+                            (frequency) => (
+                                <TouchableOpacity
+                                    key={frequency}
+                                    style={[
+                                        styles.radioButton,
+                                        compoundFrequency === frequency &&
+                                        styles.radioButtonSelected,
+                                    ]}
+                                    onPress={() => setCompoundFrequency(frequency)}
+                                >
+                                    <Text style={styles.radioButtonText}>
+                                        {frequency.charAt(0).toUpperCase() + frequency.slice(1)}
+                                    </Text>
+                                </TouchableOpacity>
+                            )
+                        )}
+                    </ScrollView>
                 </View>
-            </ScrollView>
-            <TouchableOpacity style={styles.button} onPress={calculateLoanPayment}>
-                <Text style={styles.buttonText}>Calculate Loan Payment</Text>
+            )}
+
+            <Picker
+                selectedValue={selectedFunction}
+                style={styles.picker}
+                onValueChange={(itemValue, itemIndex) =>
+                    handleFunctionChange(itemValue)
+                }
+            >
+                {Object.keys(functions).map((key) => (
+                    <Picker.Item key={key} label={functions[key].label} value={key} />
+                ))}
+            </Picker>
+
+            <TouchableOpacity style={styles.button} onPress={calculate}>
+                <Text style={styles.buttonText}>Calculate</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={calculateSimpleInterest}>
-                <Text style={styles.buttonText}>Calculate Simple Interest</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={calculateCompoundInterest}>
-                <Text style={styles.buttonText}>Calculate Compound Interest</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={calculateSavingsGrowth}>
-                <Text style={styles.buttonText}>Calculate Savings Growth</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={calculateInstallment}>
-                <Text style={styles.buttonText}>Calculate Installment</Text>
-            </TouchableOpacity>
-            {result && (<TouchableOpacity style={styles.clearButton} onPress={clearInputs}>
-                <Text style={styles.buttonText}>Clear Inputs</Text>
-            </TouchableOpacity>)}
+
+            {result && (
+                <TouchableOpacity style={styles.clearButton} onPress={clearInputs}>
+                    <Text style={styles.buttonText}>Clear</Text>
+                </TouchableOpacity>
+            )}
+
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -208,7 +275,11 @@ const FinancialCalculatorScreen = () => {
                     </View>
                 </View>
             </Modal>
-            <FormulaInfoPopup visible={formulaPopupVisible} onClose={toggleFormulaPopup} />
+
+            <FormulaInfoPopup
+                visible={formulaPopupVisible}
+                onClose={toggleFormulaPopup}
+            />
         </ScrollView>
     );
 };
@@ -216,9 +287,10 @@ const FinancialCalculatorScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
-        padding: 16,
-        justifyContent: 'center',
-        backgroundColor: '#fff',
+        // padding: 16,
+        paddingHorizontal: 20,
+        justifyContent: "center",
+        backgroundColor: "#fff",
     },
     inputContainer: {
         marginBottom: 16,
@@ -230,13 +302,11 @@ const styles = StyleSheet.create({
     input: {
         height: 40,
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: "#ccc",
         borderRadius: 8,
         paddingHorizontal: 10,
     },
     radioGroup: {
-        flexDirection: 'row',
-        alignItems: 'center',
         marginBottom: 16,
     },
     radioLabel: {
@@ -245,71 +315,72 @@ const styles = StyleSheet.create({
     },
     radioButton: {
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: "#ccc",
         borderRadius: 8,
         paddingVertical: 8,
         paddingHorizontal: 12,
         marginRight: 10,
     },
     radioButtonSelected: {
-        backgroundColor: '#4CAF50',
-        borderColor: '#4CAF50',
+        backgroundColor: "#8BC34A",
+        borderColor: "#8BC34A",
     },
     radioButtonText: {
-        color: '#333',
+        color: "#333",
         fontSize: 14,
-        fontWeight: 'bold',
+        fontWeight: "bold",
+    },
+    picker: {
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 8,
     },
     button: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: "#4CAF50",
         borderRadius: 8,
         paddingVertical: 12,
         marginBottom: 16,
     },
     clearButton: {
-        backgroundColor: '#FF5722',
+        backgroundColor: "#FF5722",
         borderRadius: 8,
         paddingVertical: 12,
         marginBottom: 16,
     },
     buttonText: {
-        color: '#fff',
+        color: "#fff",
         fontSize: 16,
-        fontWeight: 'bold',
-        textAlign: 'center',
+        fontWeight: "bold",
+        textAlign: "center",
     },
     infoButton: {
-        position: 'absolute',
+        position: "absolute",
         top: 6,
         right: 16,
         width: 35,
         height: 35,
         borderRadius: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: "center",
+        justifyContent: "center",
         zIndex: 1,
-    },
-    result: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        textAlign: 'center',
     },
     modalContainer: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
     },
     modalContent: {
-        backgroundColor: '#fff',
+        backgroundColor: "#fff",
         borderRadius: 10,
         padding: 20,
-        alignItems: 'center',
+        alignItems: "center",
         elevation: 5,
     },
     modalText: {
         fontSize: 20,
-        fontWeight: 'bold',
+        fontWeight: "bold",
         marginBottom: 10,
     },
     modalResult: {
@@ -317,15 +388,15 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     closeButton: {
-        backgroundColor: '#FF5722',
+        backgroundColor: "#FF5722",
         borderRadius: 8,
         paddingVertical: 10,
         paddingHorizontal: 20,
     },
     closeButtonText: {
-        color: '#fff',
+        color: "#fff",
         fontSize: 16,
-        fontWeight: 'bold',
+        fontWeight: "bold",
     },
 });
 
