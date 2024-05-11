@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-
 const StockMarketInsightsScreen = () => {
+
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Stock Market Insights</Text>
-            {/* Add your stock market insights here */}
         </View>
     );
 };
@@ -13,8 +13,8 @@ const StockMarketInsightsScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
         justifyContent: 'center',
+        alignItems: 'center',
         backgroundColor: '#fff',
     },
     title: {

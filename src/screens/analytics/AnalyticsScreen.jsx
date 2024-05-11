@@ -37,20 +37,47 @@ const AnalyticsScreen = () => {
 
     // console.log(totalCategoryWiseExpenses);
 
+    // const setColorByCategory = (category) => {
+    //     const trimmedCategory = category.trim().toLowerCase();
+
+    //     if (trimmedCategory === 'food') return '#3498db';
+    //     else if (trimmedCategory === 'travel') return '#9b59b6';
+    //     else if (trimmedCategory === 'medical') return '#e74c3c';
+    //     else if (trimmedCategory === 'education') return '#f1c40f';
+    //     else if (trimmedCategory === 'shopping') return '#e67e22';
+    //     else if (trimmedCategory === 'bills') return '#e74c3c';
+    //     else if (trimmedCategory === 'entertainment') return '#f1c40f';
+    //     else if (trimmedCategory === 'misc') return '#2ecc71';
+    //     else if (trimmedCategory === 'others') return '#1abc9c';
+    //     else return '#2c3e50';
+    // };
     const setColorByCategory = (category) => {
         const trimmedCategory = category.trim().toLowerCase();
 
-        if (trimmedCategory === 'food') return '#3498db';
-        else if (trimmedCategory === 'travel') return '#9b59b6';
-        else if (trimmedCategory === 'medical') return '#e74c3c';
-        else if (trimmedCategory === 'education') return '#f1c40f';
-        else if (trimmedCategory === 'shopping') return '#e67e22';
-        else if (trimmedCategory === 'bills') return '#e74c3c';
-        else if (trimmedCategory === 'entertainment') return '#f1c40f';
-        else if (trimmedCategory === 'misc') return '#2ecc71';
-        else if (trimmedCategory === 'others') return '#1abc9c';
-        else return '#2c3e50';
+        switch (trimmedCategory) {
+            case 'food':
+                return '#e59866'; // Copper
+            case 'travel':
+                return '#154360'; // Dark blue
+            case 'medical':
+                return '#c70039'; // Crimson
+            case 'education':
+                return '#f39c12'; // Orange
+            case 'shopping':
+                return '#c0392b'; // Fire engine red
+            case 'bills':
+                return '#8e44ad'; // Purple
+            case 'entertainment':
+                return '#2c3e50'; // Midnight blue
+            case 'misc':
+                return '#27ae60'; // Nephritis green
+            case 'others':
+                return '#3498db'; // Dodger blue
+            default:
+                return '#2c3e50'; // Default to Midnight blue
+        }
     };
+
 
     const dataForLineChart = Object.values(totalCategoryWiseExpenses);
 
