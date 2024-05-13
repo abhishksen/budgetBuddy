@@ -114,7 +114,9 @@ const AnalyticsScreen = () => {
 
             {/* Render All Expenses or Stats */}
             {showAllExpenses ? (
-                <AllExpenses data={expenses} />
+                <View style={styles.chartContainer}>
+                    <AllExpenses data={expenses} />
+                </View>
             ) : (
                 < View style={styles.chartContainer}>
                     <Text style={styles.title}>Visualize Your Expense Distribution</Text>
@@ -231,9 +233,10 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     toggleButton: {
+        flex: 1,
         paddingHorizontal: 20,
         paddingVertical: 10,
-        borderRadius: 8,
+        borderRadius: 2,
         backgroundColor: '#4CAF50',
         marginHorizontal: 5,
     },
@@ -241,6 +244,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#8BC34A',
     },
     toggleButtonText: {
+        textAlign: 'center',
         color: '#fff',
         fontSize: 16,
     },
