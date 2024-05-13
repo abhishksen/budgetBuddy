@@ -84,6 +84,7 @@ const ExpenseTrackerScreen = () => {
 
     // for deleting an expense
     const deleteExpense = async (id) => {
+        alert('Are you sure you want to delete this expense?');
         try {
             const updatedExpenses = allExpenses.filter(expense => expense.id !== id);
             await SecureStore.setItemAsync('expenseData', JSON.stringify(updatedExpenses));
@@ -353,7 +354,7 @@ const styles = StyleSheet.create({
     },
     editIcon: {
         marginRight: 12,
-        paddingTop: 2
+        paddingTop: 3,
     },
     deleteIcon: {
         marginRight: 0,

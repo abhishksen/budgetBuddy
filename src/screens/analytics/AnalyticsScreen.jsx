@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { BarChart, LineChart, PieChart, ProgressChart } from 'react-native-chart-kit';
 import * as SecureStore from 'expo-secure-store';
 import NotFound from '../../components/NotFound';
+import AllExpenses from '../../components/AllExpenses';
 
 const AnalyticsScreen = () => {
     const [expenses, setExpenses] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [showAllExpenses, setShowAllExpenses] = useState(false);
+
+
 
     useEffect(() => {
         const fetchExpenses = async () => {
@@ -16,10 +21,14 @@ const AnalyticsScreen = () => {
                 }
             } catch (error) {
                 console.error('Error fetching expenses:', error);
+            } finally {
+                setIsLoading(false);
             }
         };
         fetchExpenses();
     }, []);
+
+    // console.log(expenses);
 
     const calculateCategoryWiseTotal = () => {
         const categoryTotals = {};
@@ -37,20 +46,6 @@ const AnalyticsScreen = () => {
 
     // console.log(totalCategoryWiseExpenses);
 
-    // const setColorByCategory = (category) => {
-    //     const trimmedCategory = category.trim().toLowerCase();
-
-    //     if (trimmedCategory === 'food') return '#3498db';
-    //     else if (trimmedCategory === 'travel') return '#9b59b6';
-    //     else if (trimmedCategory === 'medical') return '#e74c3c';
-    //     else if (trimmedCategory === 'education') return '#f1c40f';
-    //     else if (trimmedCategory === 'shopping') return '#e67e22';
-    //     else if (trimmedCategory === 'bills') return '#e74c3c';
-    //     else if (trimmedCategory === 'entertainment') return '#f1c40f';
-    //     else if (trimmedCategory === 'misc') return '#2ecc71';
-    //     else if (trimmedCategory === 'others') return '#1abc9c';
-    //     else return '#2c3e50';
-    // };
     const setColorByCategory = (category) => {
         const trimmedCategory = category.trim().toLowerCase();
 
@@ -81,10 +76,15 @@ const AnalyticsScreen = () => {
 
     const dataForLineChart = Object.values(totalCategoryWiseExpenses);
 
+    const handleToggleAllExpenses = () => setShowAllExpenses(true);
+    const handleToggleStats = () => setShowAllExpenses(false);
+
     if (expenses.length === 0) return <NotFound text={"Not enough data!"} />;
+    if (isLoading) return <NotFound text={"Loading..."} />;
 
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+
             {/* Stats Table and Total Amount */}
             <View style={styles.statsContainer}>
                 <Text style={styles.statsTitle}>Expense Statistics</Text>
@@ -102,106 +102,119 @@ const AnalyticsScreen = () => {
                 </View>
             </View>
 
-            {/* chart container with chart items */}
-            <View style={styles.chartContainer}>
-                <Text style={styles.title}>Visualize Your Expense Distribution</Text>
-                {/* Pie Chart */}
-                <PieChart
-                    data={Object.entries(totalCategoryWiseExpenses).map(([category, totalAmount]) => ({
-                        name: category,
-                        amount: totalAmount,
-                        // color: '#' + Math.floor(Math.random() * 16777215).toString(16), // Generate random color
-                        color: setColorByCategory(category), // Generate random color
-                        legendFontColor: '#7F7F7F',
-                        legendFontSize: 10,
-                    }))}
-                    width={300}
-                    height={200}
-                    chartConfig={{
-                        backgroundGradientFrom: '#fff',
-                        backgroundGradientTo: '#fff',
-                        color: (opacity = 1) => `rgba(0, 122, 255, ${opacity})`,
-                    }}
-                    accessor="amount"
-                    backgroundColor="transparent"
-                    paddingLeft="15"
-                    style={{
-                        marginVertical: 10,
-                        borderRadius: 16,
-                    }}
-                />
-
-                {/* Bar Chart */}
-                <BarChart
-                    data={{
-                        labels: Object.keys(totalCategoryWiseExpenses),
-                        datasets: [
-                            {
-                                data: Object.values(totalCategoryWiseExpenses),
-                            },
-                        ],
-                    }}
-                    width={300}
-                    height={200}
-                    yAxisLabel="₹"
-                    chartConfig={{
-                        backgroundGradientFrom: '#fff',
-                        backgroundGradientTo: '#fff',
-                        color: (opacity = 1) => `rgba(4,77,186, ${opacity})`,
-                    }}
-                    style={{
-                        marginVertical: 8,
-                        borderRadius: 16,
-                    }}
-                />
-
-                {/* progress chart  */}
-                {/* <ProgressChart
-                    data={{
-                        labels: Object.keys(totalCategoryWiseExpenses),
-                        data: dataForLineChart.length > 0 ? dataForLineChart : [0],
-                    }}
-                    width={300}
-                    height={220}
-                    strokeWidth={8}
-                    radius={20}
-                    hideLegend={false}
-                    chartConfig={{
-                        backgroundGradientFrom: '#fff',
-                        backgroundGradientTo: '#fff',
-                        color: (opacity = 1) => `rgba(46, 204, 113, ${opacity})`,
-                    }}
-                    style={{
-                        marginVertical: 8,
-                        borderRadius: 16,
-                    }}
-                /> */}
-
-                {/* Line Chart */}
-                <LineChart
-                    data={{
-                        labels: Object.keys(totalCategoryWiseExpenses),
-                        datasets: [
-                            {
-                                data: dataForLineChart.length > 0 ? dataForLineChart : [0],
-                            }
-                        ]
-                    }}
-                    width={300}
-                    height={200}
-                    yAxisLabel='₹'
-                    chartConfig={{
-                        backgroundGradientFrom: '#fff',
-                        backgroundGradientTo: '#fff',
-                        color: (opacity = 1) => `rgba(255, 185, 0, ${opacity})`,
-                    }}
-                    bezier
-                    style={{
-                        marginVertical: 8,
-                        borderRadius: 16,
-                    }}
-                />
+            {/* Toggle Buttons */}
+            <View style={styles.toggleButtonsContainer}>
+                <Pressable style={[styles.toggleButton, !showAllExpenses && styles.activeToggleButton]} onPress={handleToggleStats}>
+                    <Text style={[styles.toggleButtonText, !showAllExpenses && styles.activeToggleButtonText]}>Statistics</Text>
+                </Pressable>
+                <Pressable style={[styles.toggleButton, showAllExpenses && styles.activeToggleButton]} onPress={handleToggleAllExpenses}>
+                    <Text style={[styles.toggleButtonText, showAllExpenses && styles.activeToggleButtonText]}>All Expenses</Text>
+                </Pressable>
             </View>
+
+            {/* Render All Expenses or Stats */}
+            {showAllExpenses ? (
+                <AllExpenses data={expenses} />
+            ) : (
+                < View style={styles.chartContainer}>
+                    <Text style={styles.title}>Visualize Your Expense Distribution</Text>
+                    {/* Pie Chart */}
+                    <PieChart
+                        data={Object.entries(totalCategoryWiseExpenses).map(([category, totalAmount]) => ({
+                            name: category,
+                            amount: totalAmount,
+                            color: setColorByCategory(category), // Generate random color
+                            legendFontColor: '#7F7F7F',
+                            legendFontSize: 10,
+                        }))}
+                        width={300}
+                        height={200}
+                        chartConfig={{
+                            backgroundGradientFrom: '#fff',
+                            backgroundGradientTo: '#fff',
+                            color: (opacity = 1) => `rgba(0, 122, 255, ${opacity})`,
+                        }}
+                        accessor="amount"
+                        backgroundColor="transparent"
+                        paddingLeft="15"
+                        style={{
+                            marginVertical: 10,
+                            borderRadius: 16,
+                        }}
+                    />
+
+                    {/* Bar Chart */}
+                    <BarChart
+                        data={{
+                            labels: Object.keys(totalCategoryWiseExpenses),
+                            datasets: [
+                                {
+                                    data: Object.values(totalCategoryWiseExpenses),
+                                },
+                            ],
+                        }}
+                        width={300}
+                        height={200}
+                        yAxisLabel="₹"
+                        chartConfig={{
+                            backgroundGradientFrom: '#fff',
+                            backgroundGradientTo: '#fff',
+                            color: (opacity = 1) => `rgba(4,77,186, ${opacity})`,
+                        }}
+                        style={{
+                            marginVertical: 8,
+                            borderRadius: 16,
+                        }}
+                    />
+
+                    {/* progress chart  */}
+                    <ProgressChart
+                        data={{
+                            labels: Object.keys(totalCategoryWiseExpenses),
+                            data: dataForLineChart.length > 0 ? dataForLineChart : [0],
+                        }}
+                        width={300}
+                        height={220}
+                        strokeWidth={8}
+                        radius={20}
+                        hideLegend={false}
+                        chartConfig={{
+                            backgroundGradientFrom: '#fff',
+                            backgroundGradientTo: '#fff',
+                            color: (opacity = 1) => `rgba(46, 204, 113, ${opacity})`,
+                        }}
+                        style={{
+                            marginVertical: 8,
+                            borderRadius: 16,
+                        }}
+                    />
+
+                    {/* Line Chart */}
+                    <LineChart
+                        data={{
+                            labels: Object.keys(totalCategoryWiseExpenses),
+                            datasets: [
+                                {
+                                    data: dataForLineChart.length > 0 ? dataForLineChart : [0],
+                                }
+                            ]
+                        }}
+                        width={300}
+                        height={200}
+                        yAxisLabel='₹'
+                        chartConfig={{
+                            backgroundGradientFrom: '#fff',
+                            backgroundGradientTo: '#fff',
+                            color: (opacity = 1) => `rgba(255, 185, 0, ${opacity})`,
+                        }}
+                        bezier
+                        style={{
+                            marginVertical: 8,
+                            borderRadius: 16,
+                        }}
+                    />
+                </View>
+            )}
         </ScrollView>
     );
 };
@@ -211,6 +224,28 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
         backgroundColor: '#fff',
+    },
+    toggleButtonsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginVertical: 10,
+    },
+    toggleButton: {
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 8,
+        backgroundColor: '#4CAF50',
+        marginHorizontal: 5,
+    },
+    activeToggleButton: {
+        backgroundColor: '#8BC34A',
+    },
+    toggleButtonText: {
+        color: '#fff',
+        fontSize: 16,
+    },
+    activeToggleButtonText: {
+        fontWeight: 'bold',
     },
     statsContainer: {
         marginVertical: 10,
