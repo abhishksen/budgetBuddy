@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
-import { BarChart, LineChart, PieChart, ProgressChart } from 'react-native-chart-kit';
+import { BarChart, LineChart, PieChart } from 'react-native-chart-kit';
 import * as SecureStore from 'expo-secure-store';
 import NotFound from '../../components/NotFound';
 import AllExpenses from '../../components/AllExpenses';
@@ -162,28 +162,6 @@ const AnalyticsScreen = () => {
                             backgroundGradientFrom: '#fff',
                             backgroundGradientTo: '#fff',
                             color: (opacity = 1) => `rgba(4,77,186, ${opacity})`,
-                        }}
-                        style={{
-                            marginVertical: 8,
-                            borderRadius: 16,
-                        }}
-                    />
-
-                    {/* progress chart  */}
-                    <ProgressChart
-                        data={{
-                            labels: Object.keys(totalCategoryWiseExpenses),
-                            data: dataForLineChart.length > 0 ? dataForLineChart : [0],
-                        }}
-                        width={300}
-                        height={220}
-                        strokeWidth={8}
-                        radius={20}
-                        hideLegend={false}
-                        chartConfig={{
-                            backgroundGradientFrom: '#fff',
-                            backgroundGradientTo: '#fff',
-                            color: (opacity = 1) => `rgba(46, 204, 113, ${opacity})`,
                         }}
                         style={{
                             marginVertical: 8,

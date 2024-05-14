@@ -1,119 +1,12 @@
-// import { Picker } from '@react-native-picker/picker';
-// import React, { useEffect, useState } from 'react';
-// import { View, Text, ScrollView, StyleSheet } from 'react-native';
-
-// const AllExpenses = ({ data }) => {
-//     const [selectedCategory, setSelectedCategory] = useState('');
-//     const [categoryOptions, setCategoryOptions] = useState([]);
-
-//     useEffect(() => {
-//         // Get unique categories
-//         const categories = Array.from(new Set(data.map(expense => expense.category)));
-
-//         // Create an array of objects { label: CategoryName, value: category }
-//         const categoryArray = categories.map(category => ({
-//             label: category,
-//             value: category.toLowerCase().replace(/\s/g, ''),
-//         }));
-
-//         // Add a default 'All Category' option
-//         categoryArray.unshift({ label: 'All', value: '' });
-
-//         // Set category options
-//         setCategoryOptions(categoryArray);
-//     }, [data]);
-
-//     // Filter expenses based on selected category
-//     const filteredData = selectedCategory === '' ? data : data.filter(expense => expense.category === selectedCategory);
-
-//     return (
-//         <View style={styles.container}>
-//             {/* <Text style={styles.text}>All Expenses</Text> */}
-//             {/* Category selector */}
-//             <View>
-//                 <Picker
-//                     selectedValue={selectedCategory}
-//                     style={styles.picker}
-//                     onValueChange={(itemValue) => setSelectedCategory(itemValue)}
-//                 >
-//                     {categoryOptions.map((category, index) => (
-//                         <Picker.Item key={index} label={category.label} value={category.value} />
-//                     ))}
-//                 </Picker>
-//             </View>
-//             <ScrollView horizontal={true}>
-//                 <View>
-//                     <View style={[styles.row, styles.headerRow]}>
-//                         <Text style={styles.cell}>ID</Text>
-//                         <Text style={styles.cell}>Category</Text>
-//                         <Text style={styles.cell}>Amount</Text>
-//                         <Text style={styles.cell}>Description</Text>
-//                         <Text style={styles.cell}>Date</Text>
-//                     </View>
-//                     {filteredData.map((expense, index) => (
-//                         <View key={index} style={[styles.row, index % 2 === 0 ? styles.evenRow : styles.oddRow]}>
-//                             <Text style={styles.cell}>{expense.id}</Text>
-//                             <Text style={styles.cell}>{expense.category}</Text>
-//                             <Text style={styles.cell}>{expense.amount}</Text>
-//                             <Text style={styles.cell}>{expense.description}</Text>
-//                             <Text style={styles.cell}>{new Date(expense.date).toLocaleDateString()}</Text>
-//                         </View>
-//                     ))}
-//                 </View>
-//             </ScrollView>
-//         </View>
-//     );
-// };
-
-// const styles = StyleSheet.create({
-//     container: {
-//         flex: 1,
-//         paddingHorizontal: 4,
-//         backgroundColor: '#fff',
-//     },
-//     text: {
-//         fontSize: 20,
-//         textAlign: 'center',
-//         padding: 10,
-//     },
-//     picker: {
-//         height: 40,
-//         width: '100%',
-//         backgroundColor: '#f2f2f2',
-//         marginBottom: 10,
-//     },
-//     row: {
-//         flexDirection: 'row',
-//         alignItems: 'center',
-//         borderBottomWidth: 0.5,
-//         paddingVertical: 4,
-//     },
-//     headerRow: {
-//         backgroundColor: '#4CAF50',
-//     },
-//     cell: {
-//         flex: 1,
-//         textAlign: 'left',
-//         padding: 10,
-//         width: 100,
-//     },
-//     evenRow: {
-//         backgroundColor: '#f2f2f2',
-//     },
-//     oddRow: {
-//         backgroundColor: '#fff',
-//     },
-// });
-
-// export default AllExpenses;
-
 import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const AllExpenses = ({ data }) => {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedSortOption, setSelectedSortOption] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
     const [categoryOptions, setCategoryOptions] = useState([]);
     const [sortOptions] = useState([
         { label: 'Sort By', value: '' },
@@ -142,7 +35,7 @@ const AllExpenses = ({ data }) => {
         setCategoryOptions(categoryArray);
     }, [data]);
 
-    // Filter expenses based on selected category and sorting option
+    // Filter expenses based on selected category, sorting option, and search query
     let filteredData = data;
 
     if (selectedCategory !== '') {
@@ -172,9 +65,38 @@ const AllExpenses = ({ data }) => {
             break;
     }
 
+    if (searchQuery) {
+        filteredData = filteredData.filter(
+            (expense) =>
+                expense.description
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase()) ||
+                expense.category.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }
+
+    // Function to handle search input change
+    const handleSearch = (query) => {
+        setSearchQuery(query);
+    };
+
+    // Function to export the expenses table as a CSV file
+    const handleExport = () => {
+        console.log('Exporting expenses as CSV file');
+        // Logic to export the expenses as a CSV file
+    };
+
     return (
         <View style={styles.container}>
-            {/* Category selector */}
+            {/* Search input */}
+            <TextInput
+                style={[styles.searchInput, { flex: 1 }]}
+                placeholder="Search expenses..."
+                value={searchQuery}
+                onChangeText={handleSearch}
+            />
+
+            {/* Category and Sort selectors */}
             <View style={styles.filterContainer}>
                 <Picker
                     selectedValue={selectedCategory}
@@ -186,7 +108,6 @@ const AllExpenses = ({ data }) => {
                     ))}
                 </Picker>
 
-                {/* Sort selector */}
                 <Picker
                     selectedValue={selectedSortOption}
                     style={[styles.picker, { flex: 1 }]}
@@ -218,6 +139,11 @@ const AllExpenses = ({ data }) => {
                     ))}
                 </View>
             </ScrollView>
+            {/* Download button */}
+            <TouchableOpacity style={styles.downloadButton} onPress={handleExport}>
+                <Icon name="cloud-download" size={20} color="#fff" />
+                <Text style={styles.downloadButtonText}>Download Expenses</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -236,6 +162,15 @@ const styles = StyleSheet.create({
     filterContainer: {
         flexDirection: 'row',
         borderBottomWidth: 0.5,
+        alignItems: 'center',
+    },
+    searchInput: {
+        height: 40,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 4,
+        paddingHorizontal: 10,
+        marginTop: 10,
     },
     picker: {
         height: 40,
@@ -260,6 +195,21 @@ const styles = StyleSheet.create({
     },
     oddRow: {
         backgroundColor: '#fff',
+    },
+    downloadButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#4CAF50',
+        borderRadius: 2,
+        padding: 12,
+        marginVertical: 16,
+    },
+    downloadButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 16,
+        paddingLeft: 6,
     },
 });
 
