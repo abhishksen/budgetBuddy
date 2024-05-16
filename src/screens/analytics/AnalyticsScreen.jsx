@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
-import { BarChart, LineChart, PieChart } from 'react-native-chart-kit';
+import { View, Text, StyleSheet, ScrollView, Pressable, Dimensions } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import NotFound from '../../components/NotFound';
 import AllExpenses from '../../components/AllExpenses';
+import ExpenseCharts from '../../components/ExpenseCharts';
+import StatsContainer from '../../components/StatsContainer';
+
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
 
 const AnalyticsScreen = () => {
     const [expenses, setExpenses] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showAllExpenses, setShowAllExpenses] = useState(false);
-
-
 
     useEffect(() => {
         const fetchExpenses = async () => {
@@ -28,8 +30,6 @@ const AnalyticsScreen = () => {
         fetchExpenses();
     }, []);
 
-    // console.log(expenses);
-
     const calculateCategoryWiseTotal = () => {
         const categoryTotals = {};
         expenses.forEach((item) => {
@@ -44,35 +44,32 @@ const AnalyticsScreen = () => {
 
     const totalCategoryWiseExpenses = calculateCategoryWiseTotal();
 
-    // console.log(totalCategoryWiseExpenses);
-
     const setColorByCategory = (category) => {
         const trimmedCategory = category.trim().toLowerCase();
 
         switch (trimmedCategory) {
             case 'food':
-                return '#e59866'; // Copper
+                return '#e59866';
             case 'travel':
-                return '#154360'; // Dark blue
+                return '#154360';
             case 'medical':
-                return '#c70039'; // Crimson
+                return '#c70039';
             case 'education':
-                return '#f39c12'; // Orange
+                return '#f39c12';
             case 'shopping':
-                return '#c0392b'; // Fire engine red
+                return '#c0392b';
             case 'bills':
-                return '#8e44ad'; // Purple
+                return '#8e44ad';
             case 'entertainment':
-                return '#2c3e50'; // Midnight blue
+                return '#2c3e50';
             case 'misc':
-                return '#27ae60'; // Nephritis green
+                return '#27ae60';
             case 'others':
-                return '#3498db'; // Dodger blue
+                return '#3498db';
             default:
-                return '#2c3e50'; // Default to Midnight blue
+                return '#2c3e50';
         }
     };
-
 
     const dataForLineChart = Object.values(totalCategoryWiseExpenses);
 
@@ -85,24 +82,8 @@ const AnalyticsScreen = () => {
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
 
-            {/* Stats Table and Total Amount */}
-            <View style={styles.statsContainer}>
-                <Text style={styles.statsTitle}>Expense Statistics</Text>
-                <View style={styles.statsTable}>
-                    {Object.entries(totalCategoryWiseExpenses).map(([category, totalAmount], index) => (
-                        <View key={index} style={styles.statsRow}>
-                            <Text style={styles.statsCategory}>{category}</Text>
-                            <Text style={styles.statsAmount}>{`₹${totalAmount.toFixed(2)}`}</Text>
-                        </View>
-                    ))}
-                    <View style={styles.statsRow}>
-                        <Text style={styles.statsCategory}>Total</Text>
-                        <Text style={styles.statsAmount}>{`₹${expenses.reduce((total, item) => total + item.amount, 0).toFixed(2)}`}</Text>
-                    </View>
-                </View>
-            </View>
+            <StatsContainer totalCategoryWiseExpenses={totalCategoryWiseExpenses} expenses={expenses} />
 
-            {/* Toggle Buttons */}
             <View style={styles.toggleButtonsContainer}>
                 <Pressable style={[styles.toggleButton, !showAllExpenses && styles.activeToggleButton]} onPress={handleToggleStats}>
                     <Text style={[styles.toggleButtonText, !showAllExpenses && styles.activeToggleButtonText]}>Statistics</Text>
@@ -112,88 +93,16 @@ const AnalyticsScreen = () => {
                 </Pressable>
             </View>
 
-            {/* Render All Expenses or Stats */}
             {showAllExpenses ? (
-                <View style={styles.chartContainer}>
+                <View style={styles.tableContainer}>
                     <AllExpenses data={expenses} />
                 </View>
             ) : (
-                < View style={styles.chartContainer}>
-                    <Text style={styles.title}>Visualize Your Expense Distribution</Text>
-                    {/* Pie Chart */}
-                    <PieChart
-                        data={Object.entries(totalCategoryWiseExpenses).map(([category, totalAmount]) => ({
-                            name: category,
-                            amount: totalAmount,
-                            color: setColorByCategory(category), // Generate random color
-                            legendFontColor: '#7F7F7F',
-                            legendFontSize: 10,
-                        }))}
-                        width={300}
-                        height={200}
-                        chartConfig={{
-                            backgroundGradientFrom: '#fff',
-                            backgroundGradientTo: '#fff',
-                            color: (opacity = 1) => `rgba(0, 122, 255, ${opacity})`,
-                        }}
-                        accessor="amount"
-                        backgroundColor="transparent"
-                        paddingLeft="15"
-                        style={{
-                            marginVertical: 10,
-                            borderRadius: 16,
-                        }}
-                    />
-
-                    {/* Bar Chart */}
-                    <BarChart
-                        data={{
-                            labels: Object.keys(totalCategoryWiseExpenses),
-                            datasets: [
-                                {
-                                    data: Object.values(totalCategoryWiseExpenses),
-                                },
-                            ],
-                        }}
-                        width={300}
-                        height={200}
-                        yAxisLabel="₹"
-                        chartConfig={{
-                            backgroundGradientFrom: '#fff',
-                            backgroundGradientTo: '#fff',
-                            color: (opacity = 1) => `rgba(4,77,186, ${opacity})`,
-                        }}
-                        style={{
-                            marginVertical: 8,
-                            borderRadius: 16,
-                        }}
-                    />
-
-                    {/* Line Chart */}
-                    <LineChart
-                        data={{
-                            labels: Object.keys(totalCategoryWiseExpenses),
-                            datasets: [
-                                {
-                                    data: dataForLineChart.length > 0 ? dataForLineChart : [0],
-                                }
-                            ]
-                        }}
-                        width={300}
-                        height={200}
-                        yAxisLabel='₹'
-                        chartConfig={{
-                            backgroundGradientFrom: '#fff',
-                            backgroundGradientTo: '#fff',
-                            color: (opacity = 1) => `rgba(255, 185, 0, ${opacity})`,
-                        }}
-                        bezier
-                        style={{
-                            marginVertical: 8,
-                            borderRadius: 16,
-                        }}
-                    />
-                </View>
+                <ExpenseCharts
+                    totalCategoryWiseExpenses={totalCategoryWiseExpenses}
+                    dataForLineChart={dataForLineChart}
+                    setColorByCategory={setColorByCategory}
+                />
             )}
         </ScrollView>
     );
@@ -229,35 +138,6 @@ const styles = StyleSheet.create({
     activeToggleButtonText: {
         fontWeight: 'bold',
     },
-    statsContainer: {
-        marginVertical: 10,
-        padding: 16,
-        borderRadius: 10,
-        backgroundColor: '#2C3E50',
-    },
-    statsTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 10,
-        color: '#fff',
-    },
-    statsTable: {
-        flexDirection: 'column',
-    },
-    statsRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 8,
-    },
-    statsCategory: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: '#fff',
-    },
-    statsAmount: {
-        fontSize: 16,
-        color: '#3498db',
-    },
     title: {
         fontSize: 16,
         fontWeight: 'bold',
@@ -265,7 +145,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: '#2C3E50',
     },
-    chartContainer: {
+    tableContainer: {
         alignItems: 'center',
         marginBottom: 20,
         paddingBottom: 10,
