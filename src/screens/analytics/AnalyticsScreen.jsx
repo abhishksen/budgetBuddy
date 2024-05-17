@@ -6,9 +6,6 @@ import AllExpenses from '../../components/AllExpenses';
 import ExpenseCharts from '../../components/ExpenseCharts';
 import StatsContainer from '../../components/StatsContainer';
 
-const screenWidth = Dimensions.get('window').width;
-const screenHeight = Dimensions.get('window').height;
-
 const AnalyticsScreen = () => {
     const [expenses, setExpenses] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
