@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, FlatList, SafeAreaView, Alert } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet, FlatList, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as SecureStore from 'expo-secure-store';
@@ -7,6 +7,7 @@ import { Picker } from '@react-native-picker/picker';
 import { Calendar } from 'react-native-calendars';
 
 const ExpenseTrackerScreen = () => {
+    const [isLoading, setIsLoading] = useState(false);
     const [expenseAmount, setExpenseAmount] = useState('');
     const [expenseCategory, setExpenseCategory] = useState('');
     const [expenseDescription, setExpenseDescription] = useState('');
@@ -14,10 +15,27 @@ const ExpenseTrackerScreen = () => {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [allExpenses, setAllExpenses] = useState([]);
     const [editExpense, setEditExpense] = useState(null);
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]); // Initially select today's date
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [markedDates, setMarkedDates] = useState({});
     const [calendarView, setCalendarView] = useState(false);
 
+    const expenseCategories = [
+        { label: 'Select Expense Category', value: '', color: '' },
+        { label: 'Food', value: 'food', color: '#e59866' },
+        { label: 'Travel', value: 'travel', color: '#154360' },
+        { label: 'Medical', value: 'medical', color: '#c70039' },
+        { label: 'Education', value: 'education', color: '#f39c12' },
+        { label: 'Shopping', value: 'shopping', color: '#c0392b' },
+        { label: 'Bills', value: 'bills', color: '#8e44ad' },
+        { label: 'Entertainment', value: 'entertainment', color: '#2c3e50' },
+        { label: 'Misc', value: 'misc', color: '#27ae60' },
+        { label: 'Others', value: 'others', color: '#3498db' },
+    ];
+
+    const setColorByCategory = (category) => {
+        const categoryObj = expenseCategories.find(cat => cat.value === category);
+        return categoryObj ? categoryObj.color : '#2c3e50';
+    };
 
     const handleDateChange = (event, date) => {
         if (event.type === 'set') {
@@ -26,38 +44,44 @@ const ExpenseTrackerScreen = () => {
         setShowDatePicker(false);
     };
 
+    const resetForm = () => {
+        setExpenseAmount('');
+        setExpenseCategory('');
+        setExpenseDescription('');
+        setExpenseDate(new Date());
+        setEditExpense(null);
+    };
+
     const handleSaveExpense = async () => {
         if (!expenseAmount || !expenseCategory || !expenseDescription) {
             return Alert.alert('Error', 'Please fill all the fields');
         }
+        setIsLoading(true);
+        const expenseData = {
+            id: editExpense ? editExpense.id : Date.now(),
+            amount: expenseAmount,
+            category: expenseCategory,
+            description: expenseDescription,
+            date: expenseDate.toISOString(),
+        };
+
+        const updatedExpenses = editExpense
+            ? allExpenses.map(expense => expense.id === editExpense.id ? { ...expense, ...expenseData } : expense)
+            : [...allExpenses, expenseData];
 
         try {
-            const expenseData = {
-                id: editExpense ? editExpense.id : Date.now(),
-                amount: expenseAmount,
-                category: expenseCategory,
-                description: expenseDescription,
-                date: expenseDate.toISOString(),
-            };
-
-            let existingArray = allExpenses;
-
-            if (editExpense) {
-                existingArray = allExpenses.map(expense => expense.id === editExpense.id ? { ...expense, ...expenseData } : expense);
-            } else {
-                existingArray.push(expenseData);
-            }
-
-            await SecureStore.setItemAsync('expenseData', JSON.stringify(existingArray));
-            setAllExpenses(existingArray);
+            await SecureStore.setItemAsync('expenseData', JSON.stringify(updatedExpenses));
+            setAllExpenses(updatedExpenses);
             resetForm();
         } catch (error) {
             console.error('Error saving expense:', error);
             Alert.alert('Error', 'There was an error saving the expense');
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    const fetchExpenses = async () => {
+    const fetchExpenses = useCallback(async () => {
         try {
             const storedData = await SecureStore.getItemAsync('expenseData');
             const storedArray = storedData ? JSON.parse(storedData) : [];
@@ -66,14 +90,13 @@ const ExpenseTrackerScreen = () => {
             console.error('Error fetching expenses:', error);
             Alert.alert('Error', 'There was an error fetching the expenses');
         }
-    };
-
-    useEffect(() => {
-        fetchExpenses();
     }, []);
 
     useEffect(() => {
-        // Update marked dates whenever allExpenses changes
+        fetchExpenses();
+    }, [fetchExpenses]);
+
+    useEffect(() => {
         const updatedMarkedDates = {};
         allExpenses.forEach((expense) => {
             const formattedDate = new Date(expense.date).toISOString().split('T')[0];
@@ -85,16 +108,12 @@ const ExpenseTrackerScreen = () => {
         setMarkedDates(updatedMarkedDates);
     }, [allExpenses]);
 
-
     const deleteExpense = (id) => {
         Alert.alert(
             'Confirm',
             'Are you sure you want to delete this expense?',
             [
-                {
-                    text: 'Cancel',
-                    style: 'cancel',
-                },
+                { text: 'Cancel', style: 'cancel' },
                 {
                     text: 'Yes',
                     onPress: async () => {
@@ -121,15 +140,12 @@ const ExpenseTrackerScreen = () => {
         setEditExpense(expense);
     };
 
-    const clearAsyncStorage = async () => {
+    const clearAsyncStorage = () => {
         Alert.alert(
             'Confirm',
             'Are you sure you want to clear all your previous expenses?',
             [
-                {
-                    text: 'Cancel',
-                    style: 'cancel',
-                },
+                { text: 'Cancel', style: 'cancel' },
                 {
                     text: 'Yes',
                     onPress: async () => {
@@ -148,32 +164,18 @@ const ExpenseTrackerScreen = () => {
         );
     };
 
-    const resetForm = () => {
-        setExpenseAmount('');
-        setExpenseCategory('');
-        setExpenseDescription('');
-        setExpenseDate(new Date());
-        setEditExpense(null);
-        setMarkedDates({});
-    };
+    const handleDayPress = (day) => {
+        setSelectedDate(day.dateString);
+        const expensesForTheDay = allExpenses.filter(expense => expense.date.startsWith(day.dateString));
 
-
-    const expenseCategories = [
-        { label: 'Select Expense Category', value: '', color: '' },
-        { label: 'Food', value: 'food', color: '#e59866' },
-        { label: 'Travel', value: 'travel', color: '#154360' },
-        { label: 'Medical', value: 'medical', color: '#c70039' },
-        { label: 'Education', value: 'education', color: '#f39c12' },
-        { label: 'Shopping', value: 'shopping', color: '#c0392b' },
-        { label: 'Bills', value: 'bills', color: '#8e44ad' },
-        { label: 'Entertainment', value: 'entertainment', color: '#2c3e50' },
-        { label: 'Misc', value: 'misc', color: '#27ae60' },
-        { label: 'Others', value: 'others', color: '#3498db' },
-    ];
-
-    const setColorByCategory = (category) => {
-        const categoryObj = expenseCategories.find(cat => cat.value === category);
-        return categoryObj ? categoryObj.color : '#2c3e50';
+        if (expensesForTheDay.length > 0) {
+            const expenseDetails = expensesForTheDay.map(expense =>
+                `Amount: ${expense.amount}\nCategory: ${expense.category}\nDescription: ${expense.description}`
+            ).join('\n\n');
+            Alert.alert(`Expenses on ${day.dateString}`, expenseDetails);
+        } else {
+            Alert.alert('No Expenses', `There are no expenses for the selected date ${day.dateString}`);
+        }
     };
 
     return (
@@ -212,7 +214,6 @@ const ExpenseTrackerScreen = () => {
                     display="default"
                     maximumDate={new Date()}
                     onChange={handleDateChange}
-                    onCancel={() => setShowDatePicker(false)}
                 />
             )}
             <TextInput
@@ -224,7 +225,7 @@ const ExpenseTrackerScreen = () => {
                 onChangeText={(text) => setExpenseDescription(text)}
             />
             <Pressable style={styles.saveButton} onPress={handleSaveExpense}>
-                <Text style={styles.saveButtonText}>{editExpense ? 'Update Expense' : 'Save Expense'}</Text>
+                {isLoading ? <ActivityIndicator color={"#8BC34A"} /> : <Text style={styles.saveButtonText}>{editExpense ? 'Update Expense' : 'Save Expense'}</Text>}
             </Pressable>
 
             <View style={styles.headerContainer}>
@@ -267,40 +268,14 @@ const ExpenseTrackerScreen = () => {
                 )}
             />
 
-
             {calendarView && (
                 <Calendar
                     current={selectedDate}
                     markedDates={markedDates}
-                    onDayPress={(day) => setSelectedDate(day.dateString)}
-                    theme={{
-                        backgroundColor: '#ffffff',
-                        calendarBackground: '#ffffff',
-                        textSectionTitleColor: '#8BC34A',
-                        selectedDayBackgroundColor: '#4CAF50',
-                        selectedDayTextColor: '#ffffff',
-                        todayTextColor: '#8BC34A',
-                        dayTextColor: '#2d4150',
-                        textDisabledColor: '#d9e1e8',
-                        dotColor: '#4CAF50',
-                        selectedDotColor: '#ffffff',
-                        arrowColor: '#8BC34A',
-                        monthTextColor: '#8BC34A',
-                        indicatorColor: '#4CAF50',
-                        textDayFontFamily: 'monospace',
-                        textMonthFontFamily: 'monospace',
-                        textDayHeaderFontFamily: 'monospace',
-                        textDayFontWeight: '300',
-                        textMonthFontWeight: 'bold',
-                        textDayHeaderFontWeight: '300',
-                        textDayFontSize: 16,
-                        textMonthFontSize: 16,
-                        textDayHeaderFontSize: 16
-                    }}
+                    onDayPress={handleDayPress}
+                    theme={calendarTheme}
                 />
-
             )}
-
 
             {!calendarView && allExpenses.length > 0 && (
                 <Pressable style={styles.clearButton} onPress={clearAsyncStorage}>
@@ -309,6 +284,31 @@ const ExpenseTrackerScreen = () => {
             )}
         </SafeAreaView>
     );
+};
+
+const calendarTheme = {
+    backgroundColor: '#ffffff',
+    calendarBackground: '#ffffff',
+    textSectionTitleColor: '#8BC34A',
+    selectedDayBackgroundColor: '#4CAF50',
+    selectedDayTextColor: '#ffffff',
+    todayTextColor: '#8BC34A',
+    dayTextColor: '#2d4150',
+    textDisabledColor: '#d9e1e8',
+    dotColor: '#4CAF50',
+    selectedDotColor: '#ffffff',
+    arrowColor: '#8BC34A',
+    monthTextColor: '#8BC34A',
+    indicatorColor: '#4CAF50',
+    textDayFontFamily: 'monospace',
+    textMonthFontFamily: 'monospace',
+    textDayHeaderFontFamily: 'monospace',
+    textDayFontWeight: '300',
+    textMonthFontWeight: 'bold',
+    textDayHeaderFontWeight: '300',
+    textDayFontSize: 16,
+    textMonthFontSize: 16,
+    textDayHeaderFontSize: 16
 };
 
 const styles = StyleSheet.create({
@@ -414,9 +414,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         marginBottom: 14,
         marginTop: 4,
-
     },
-
     editIcon: {
         marginRight: 12,
         paddingTop: 3,
