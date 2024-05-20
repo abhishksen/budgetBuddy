@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Pressable, Image, Text, Alert, ActivityIndicator, ScrollView } from 'react-native';
+import { View, StyleSheet, Pressable, Image, Text, Alert, ActivityIndicator } from 'react-native';
 import CardButtonComponent from '../../components/CardButtonComponent';
 import HeaderComponent from '../../components/HeaderComponent';
 import { AntDesign } from '@expo/vector-icons';
@@ -11,11 +11,10 @@ import CalendarComponent from '../../components/CalendarComponent';
 const HomeScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
 
-    const handlelogout = async () => {
+    const handleLogout = async () => {
         setLoading(true);
         try {
             await signOut(auth);
-            // Clear user credentials from secure store
             await SecureStore.deleteItemAsync('user');
         } catch (error) {
             Alert.alert('Error', 'Something went wrong. Please try again later.');
@@ -27,7 +26,7 @@ const HomeScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
 
-            {/* navigation */}
+            {/* Navigation */}
             <View style={styles.header}>
                 <Pressable style={styles.profileContainer} onPress={() => navigation.navigate('Profile')}>
                     <Image
@@ -35,7 +34,7 @@ const HomeScreen = ({ navigation }) => {
                         source={require('../../../assets/img/profilePic.png')}
                     />
                 </Pressable>
-                <Pressable style={styles.logoutBtn} onPress={handlelogout}>
+                <Pressable style={styles.logoutBtn} onPress={handleLogout}>
                     {loading ? <ActivityIndicator color={"#fff"} /> : <Text style={styles.btnText}>Logout</Text>}
                 </Pressable>
                 <Pressable style={styles.analyticsIcon} onPress={() => navigation.navigate('Analytics')}>
@@ -43,37 +42,34 @@ const HomeScreen = ({ navigation }) => {
                 </Pressable>
             </View>
 
-            <ScrollView showsVerticalScrollIndicator={false}>
-                {/* Header */}
-                <HeaderComponent
-                    title="BudgetBuddy"
-                    slogan="Beyond Budgeting – BudgetBuddy, Your Guide to Financial Wisdom."
+            {/* Header */}
+            <HeaderComponent
+                title="BudgetBuddy"
+                slogan="Beyond Budgeting – BudgetBuddy, Your Guide to Financial Wisdom."
+            />
+
+            {/* Calendar */}
+            <CalendarComponent />
+
+            {/* Floating Bottom Navigation */}
+            <View style={styles.floatingContainer}>
+                <CardButtonComponent
+                    icon="attach-money"
+                    title="Track"
+                    onPress={() => navigation.navigate('Expense')}
                 />
+                <CardButtonComponent
+                    icon="explore"
+                    title="Explore"
+                    onPress={() => navigation.navigate('Explore')}
+                />
+                <CardButtonComponent
+                    icon="chat"
+                    title="Chat"
+                    onPress={() => navigation.navigate('Chat')}
+                />
+            </View>
 
-                {/* Card Buttons */}
-                <View style={styles.cardContainer}>
-                    <CardButtonComponent
-                        icon="attach-money"
-                        title="Track"
-                        onPress={() => navigation.navigate('Expense')}
-                    />
-
-                    <CardButtonComponent
-                        icon="explore"
-                        title="Explore"
-                        onPress={() => navigation.navigate('Explore')}
-                    />
-
-                    <CardButtonComponent
-                        icon="chat"
-                        title="Chat"
-                        onPress={() => navigation.navigate('Chat')}
-                    />
-                </View>
-
-                {/* palaner */}
-                <CalendarComponent />
-            </ScrollView>
         </View>
     );
 };
@@ -118,10 +114,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 30,
     },
-    cardContainer: {
+    floatingContainer: {
+        position: 'absolute',
+        bottom: 20,
+        left: 0,
+        right: 0,
         flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 10,
+        paddingVertical: 14,
+        backgroundColor: '#2C3E50',
+        borderRadius: 40,
+        marginHorizontal: 20,
+        elevation: 8,
     },
 });
 
