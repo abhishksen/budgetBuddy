@@ -228,15 +228,17 @@ const ExpenseTrackerScreen = () => {
                 {isLoading ? <ActivityIndicator color={"#8BC34A"} /> : <Text style={styles.saveButtonText}>{editExpense ? 'Update Expense' : 'Save Expense'}</Text>}
             </Pressable>
 
-            <View style={styles.headerContainer}>
-                {allExpenses.length > 0 && <Text style={styles.title}>Previous Expenses</Text>}
-                <Icon
-                    name={calendarView ? 'list' : 'calendar'}
-                    size={22}
-                    color="#2C3E50"
-                    onPress={() => setCalendarView(!calendarView)}
-                />
-            </View>
+            {allExpenses.length > 0 &&
+                <View style={styles.headerContainer}>
+                    <Text style={styles.title}>Previous Expenses</Text>
+                    <Icon
+                        name={calendarView ? 'list' : 'calendar'}
+                        size={22}
+                        color="#2C3E50"
+                        onPress={() => setCalendarView(!calendarView)}
+                    />
+                </View>
+            }
 
             <FlatList
                 showsVerticalScrollIndicator={false}
