@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     closeButton: {
-        backgroundColor: '#e74c3c',
+        backgroundColor: '#f44336',
         borderRadius: 8,
         paddingVertical: 12,
         alignItems: 'center',

@@ -176,7 +176,7 @@ const FinancialCalculatorScreen = () => {
             showsVerticalScrollIndicator={false}
         >
             <TouchableOpacity style={styles.infoButton} onPress={toggleFormulaPopup}>
-                <MaterialIcons name="info" size={24} color="#FF5722" />
+                <MaterialIcons name="info" size={24} color="#f44336" />
             </TouchableOpacity>
 
             <View style={styles.inputContainer}>
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     clearButton: {
-        backgroundColor: "#FF5722",
+        backgroundColor: "#f44336",
         borderRadius: 8,
         paddingVertical: 12,
         marginBottom: 16,
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     closeButton: {
-        backgroundColor: "#FF5722",
+        backgroundColor: "#f44336",
         borderRadius: 8,
         paddingVertical: 10,
         paddingHorizontal: 20,

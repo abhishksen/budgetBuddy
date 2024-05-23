@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Pressable, Image, Text, Alert, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import CardButtonComponent from '../../components/CardButtonComponent';
 import HeaderComponent from '../../components/HeaderComponent';
-import { AntDesign } from '@expo/vector-icons';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../config/firebase';
 import * as SecureStore from 'expo-secure-store';
 import CalendarComponent from '../../components/CalendarComponent';
+import NavbarHeader from '../../components/NavbarHeader';
 
 const HomeScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
@@ -27,20 +27,7 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.container}>
 
             {/* Navigation */}
-            <View style={styles.header}>
-                <Pressable style={styles.profileContainer} onPress={() => navigation.navigate('Profile')}>
-                    <Image
-                        style={styles.profileImage}
-                        source={require('../../../assets/img/profilePic.png')}
-                    />
-                </Pressable>
-                <Pressable style={styles.logoutBtn} onPress={handleLogout}>
-                    {loading ? <ActivityIndicator color={"#fff"} /> : <Text style={styles.btnText}>Logout</Text>}
-                </Pressable>
-                <Pressable style={styles.analyticsIcon} onPress={() => navigation.navigate('Analytics')}>
-                    <AntDesign name="piechart" size={40} color="#2C3E50" />
-                </Pressable>
-            </View>
+            <NavbarHeader navigation={navigation} handleLogout={handleLogout} loading={loading} />
 
             {/* Header */}
             <HeaderComponent
@@ -54,17 +41,22 @@ const HomeScreen = ({ navigation }) => {
             {/* Floating Bottom Navigation */}
             <View style={styles.floatingContainer}>
                 <CardButtonComponent
-                    icon="attach-money"
+                    icon="addchart"
                     title="Track"
                     onPress={() => navigation.navigate('Expense')}
                 />
                 <CardButtonComponent
-                    icon="explore"
+                    icon="bar-chart"
+                    title="Stats"
+                    onPress={() => navigation.navigate('Analytics')}
+                />
+                <CardButtonComponent
+                    icon="travel-explore"
                     title="Explore"
                     onPress={() => navigation.navigate('Explore')}
                 />
                 <CardButtonComponent
-                    icon="chat"
+                    icon="mark-unread-chat-alt"
                     title="Chat"
                     onPress={() => navigation.navigate('Chat')}
                 />

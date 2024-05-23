@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Modal, Pressable, ScrollView } from 'react-native';
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 const FormulaInfoPopup = ({ visible, onClose }) => {
     return (
@@ -11,7 +12,12 @@ const FormulaInfoPopup = ({ visible, onClose }) => {
         >
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
-                    <Text style={styles.modalTitle}>Formulas</Text>
+                    <View style={styles.modalHeader}>
+                        <Text style={styles.modalTitle}>Formulas</Text>
+                        <Pressable style={styles.closeButton} onPress={onClose}>
+                            <MaterialIcons name="close" size={24} color="#f44336" />
+                        </Pressable>
+                    </View>
                     <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
                         <View style={styles.formulaContainer}>
                             <Text style={styles.formulaName}>Loan Payment:</Text>
@@ -36,9 +42,6 @@ const FormulaInfoPopup = ({ visible, onClose }) => {
                         </View>
                     </ScrollView>
                 </View>
-                <Pressable style={styles.closeButton} onPress={onClose}>
-                    <Text style={styles.closeButtonText}>Close</Text>
-                </Pressable>
             </View>
         </Modal>
     );
@@ -59,14 +62,19 @@ const styles = StyleSheet.create({
         elevation: 5,
         width: '90%', // Adjust the width of the modal content
     },
+    modalHeader: {
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
     modalTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#FF5722',
-        marginBottom: 16,
     },
     scrollView: {
-        maxHeight: 300, // Limit the height of the scroll view
+        maxHeight: 300,
     },
     formulaContainer: {
         marginBottom: 10,
@@ -81,16 +89,13 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     closeButton: {
-        backgroundColor: '#FF5722',
         borderRadius: 8,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        marginTop: 18,
-    },
-    closeButtonText: {
-        color: '#fff',
-        fontSize: 14,
-        fontWeight: 'bold',
+        padding: 2,
+        borderWidth: 1,
+        borderColor: '#f44336',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 

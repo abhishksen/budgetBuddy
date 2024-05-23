@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
         marginRight: 0,
     },
     clearButton: {
-        backgroundColor: '#e74c3c',
+        backgroundColor: '#f44336',
         borderRadius: 8,
         paddingVertical: 12,
         alignItems: 'center',
