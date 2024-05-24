@@ -16,9 +16,9 @@ const ExpenseCharts = ({ totalCategoryWiseExpenses, dataForLineChart, setColorBy
                         amount: totalAmount,
                         color: setColorByCategory(category),
                         legendFontColor: '#ffffff',
-                        legendFontSize: 12,
+                        legendFontSize: 10,
                     }))}
-                    width={screenWidth - 40}
+                    width={screenWidth - 32}
                     height={screenHeight / 3.5}
                     chartConfig={{
                         backgroundColor: '#000000',
@@ -27,7 +27,7 @@ const ExpenseCharts = ({ totalCategoryWiseExpenses, dataForLineChart, setColorBy
                         color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                     }}
                     accessor="amount"
-                    backgroundColor='#2c3e50'
+                    backgroundColor='#14222d'
                     paddingLeft="15"
                     style={styles.chartStyle}
                 />
@@ -39,7 +39,7 @@ const ExpenseCharts = ({ totalCategoryWiseExpenses, dataForLineChart, setColorBy
                         labels: Object.keys(totalCategoryWiseExpenses),
                         datasets: [{ data: Object.values(totalCategoryWiseExpenses) }],
                     }}
-                    width={screenWidth - 40}
+                    width={screenWidth - 32}
                     height={screenHeight / 3}
                     yAxisLabel="₹"
                     chartConfig={{
@@ -63,7 +63,7 @@ const ExpenseCharts = ({ totalCategoryWiseExpenses, dataForLineChart, setColorBy
                         labels: Object.keys(totalCategoryWiseExpenses),
                         datasets: [{ data: dataForLineChart.length > 0 ? dataForLineChart : [0] }],
                     }}
-                    width={screenWidth - 40}
+                    width={screenWidth - 32}
                     height={screenHeight / 3}
                     yAxisLabel='₹'
                     chartConfig={{

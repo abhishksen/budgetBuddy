@@ -121,7 +121,8 @@ const styles = StyleSheet.create({
     },
     notFoundText: {
         fontSize: 18,
-        color: 'f44336',
+        fontWeight: 'bold',
+        color: '#f44336',
         paddingVertical: 20,
         textAlign: 'center',
     },

@@ -1,55 +1,50 @@
 import React from 'react';
 import { View, Pressable, Image, Text, ActivityIndicator, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const NavbarHeader = ({ navigation, handleLogout, loading }) => {
     return (
-        <View style={styles.header}>
-            <Pressable style={styles.profileContainer} onPress={() => navigation.navigate('Profile')}>
-                <Image
-                    style={styles.profileImage}
-                    source={require('../../assets/img/profilePic.png')}
-                />
-            </Pressable>
-            <Text style={styles.text}>BudgetBuddy</Text>
-            <Pressable style={styles.logoutBtn} onPress={handleLogout}>
-                {loading ? <ActivityIndicator color={"#fff"} /> : <Icon name={"logout"} size={24} color="#fff" />}
-            </Pressable>
+        <View style={styles.headerContainer}>
+            <View style={styles.header}>
+                <Pressable style={styles.profileContainer} onPress={() => navigation.navigate('Profile')}>
+                    <Image
+                        style={styles.profileImage}
+                        source={require('../../assets/img/profilePic.png')}
+                    />
+                </Pressable>
+                <Pressable style={styles.logoutBtn} onPress={handleLogout}>
+                    {loading ? <ActivityIndicator color={"#fff"} /> : <Icon name={"logout"} size={32} color="#fff" />}
+                </Pressable>
+            </View>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    headerContainer: {
+        paddingHorizontal: 16,
+        paddingTop: 16,
+        paddingBottom: 8,
+        backgroundColor: '#4CAF50',
+    },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingVertical: 10,
         marginTop: 10,
-        marginBottom: 6,
     },
     profileContainer: {
-        padding: 5,
+        paddingLeft: 4,
     },
     profileImage: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: 45,
+        height: 45,
+        borderRadius: 22,
     },
     logoutBtn: {
-        backgroundColor: '#f44336',
-        padding: 8,
-        borderRadius: 25,
-    },
-    text: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#2C3E50',
-        fontStyle: 'italic',
-        textDecorationLine: 'underline',
-    },
-    analyticsIcon: {
-        padding: 5,
+        backgroundColor: '#4CAF50',
+        paddingRight: 4,
     },
 });
 
