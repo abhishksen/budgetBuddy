@@ -52,6 +52,10 @@ const CalendarComponent = React.memo(() => {
             setIsModalVisible(false);
         } catch (error) {
             Alert.alert('Error', 'Failed to save the expense. Please try again.');
+        } finally {
+            setExpenseGoal('');
+            setDescription('');
+            setAmount('');
         }
     }, [expenseGoal, description, amount, selectedDate, markedDates, items]);
 
@@ -80,6 +84,7 @@ const CalendarComponent = React.memo(() => {
         </View>
     ), []);
 
+    // unused function to clear all marked dates
     const ClearAll = async () => {
         try {
             await SecureStore.deleteItemAsync('markedDatesKeys');

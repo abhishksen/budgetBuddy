@@ -4,13 +4,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { auth } from '../../config/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import * as SecureStore from 'expo-secure-store';
-
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const LoginScreen = ({ navigation }) => {
-
     const [email, setEmail] = useState('user@gmail.com');
     const [password, setPassword] = useState('password');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = async () => {
         if (email === '' || password === '') return Alert.alert('Error', 'Please fill in all fields');
@@ -49,14 +49,19 @@ const LoginScreen = ({ navigation }) => {
                     onChangeText={(text) => setEmail(text)}
                     placeholderTextColor="#FFFFFF"
                 />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Password"
-                    secureTextEntry
-                    value={password}
-                    onChangeText={(text) => setPassword(text)}
-                    placeholderTextColor="#FFFFFF"
-                />
+                <View style={styles.passwordContainer}>
+                    <TextInput
+                        style={styles.passwordInput}
+                        placeholder="Password"
+                        secureTextEntry={!showPassword}
+                        value={password}
+                        onChangeText={(text) => setPassword(text)}
+                        placeholderTextColor="#FFFFFF"
+                    />
+                    <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+                        <Icon name={showPassword ? "visibility-off" : "visibility"} size={24} color="#FFFFFF" />
+                    </Pressable>
+                </View>
                 <Pressable style={styles.button} onPress={handleLogin}>
                     {loading ? <ActivityIndicator color={"#8BC34A"} /> : <Text style={styles.buttonText}>Login</Text>}
                 </Pressable>
@@ -113,6 +118,22 @@ const styles = StyleSheet.create({
         paddingLeft: 15,
         marginBottom: 14,
         color: '#FFFFFF',
+    },
+    passwordContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 0.3)',
+        borderRadius: 10,
+        height: 50,
+        marginBottom: 14,
+        paddingLeft: 15,
+    },
+    passwordInput: {
+        flex: 1,
+        color: '#FFFFFF',
+    },
+    eyeIcon: {
+        padding: 10,
     },
     button: {
         backgroundColor: '#FFFFFF',

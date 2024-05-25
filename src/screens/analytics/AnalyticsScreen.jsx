@@ -73,8 +73,7 @@ const AnalyticsScreen = () => {
     const handleToggleAllExpenses = () => setShowAllExpenses(true);
     const handleToggleStats = () => setShowAllExpenses(false);
 
-    if (expenses.length === 0) return <NotFound text={"Not enough data!"} />;
-    if (isLoading) return <NotFound text={"Loading..."} />;
+    if (isLoading || expenses.length === 0) return <NotFound text={"Loading... Please Wait!"} />;
 
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
