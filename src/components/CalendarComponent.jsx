@@ -84,6 +84,13 @@ const CalendarComponent = React.memo(() => {
         </View>
     ), []);
 
+    const RenderEmptyDate = () => (
+        <View style={styles.warningContainer}>
+            <Text style={styles.warningText}>No goal for the day. Select a date to add new goal!</Text>
+        </View>
+    );
+
+
     // unused function to clear all marked dates
     const ClearAll = async () => {
         try {
@@ -101,6 +108,7 @@ const CalendarComponent = React.memo(() => {
                 loadItemsForMonth={loadMarkedDates}
                 selected={selectedDate}
                 renderItem={renderItem}
+                renderEmptyData={() => <RenderEmptyDate />}
                 onDayPress={handleDayPress}
                 theme={{
                     backgroundColor: '#ffffff',
@@ -231,7 +239,19 @@ const styles = StyleSheet.create({
         padding: 10,
         marginRight: 10,
         marginTop: 17
-    }
+    },
+    warningContainer: {
+        backgroundColor: '#FFf',
+        borderRadius: 5,
+        padding: 10,
+        margin: 10,
+        alignItems: 'center',
+    },
+    warningText: {
+        color: '#f44336',
+        fontSize: 16,
+        textAlign: 'center',
+    },
 });
 
 export default CalendarComponent;

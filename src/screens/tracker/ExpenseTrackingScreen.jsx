@@ -1,5 +1,7 @@
 // import React, { useEffect, useState, useCallback } from 'react';
-// import { View, Text, TextInput, Pressable, StyleSheet, FlatList, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
+// import {
+//     View, Text, TextInput, Pressable, StyleSheet, FlatList, SafeAreaView, Alert, ActivityIndicator
+// } from 'react-native';
 // import DateTimePicker from '@react-native-community/datetimepicker';
 // import Icon from 'react-native-vector-icons/FontAwesome';
 // import * as SecureStore from 'expo-secure-store';
@@ -32,10 +34,10 @@
 //         { label: 'Others', value: 'others', color: '#3498db' },
 //     ];
 
-//     const setColorByCategory = (category) => {
+//     const setColorByCategory = useCallback((category) => {
 //         const categoryObj = expenseCategories.find(cat => cat.value === category);
 //         return categoryObj ? categoryObj.color : '#2c3e50';
-//     };
+//     }, []);
 
 //     const handleDateChange = (event, date) => {
 //         if (event.type === 'set') {
@@ -106,7 +108,7 @@
 //             };
 //         });
 //         setMarkedDates(updatedMarkedDates);
-//     }, [allExpenses]);
+//     }, [allExpenses, setColorByCategory]);
 
 //     const deleteExpense = (id) => {
 //         Alert.alert(
@@ -178,55 +180,85 @@
 //         }
 //     };
 
+//     const renderExpenseItem = ({ item }) => (
+//         <View style={[styles.expenseItem, { backgroundColor: setColorByCategory(item.category) }]}>
+//             <Text style={styles.expenseAmount}>{`Amount: ${item.amount}`}</Text>
+//             <Text style={styles.expenseCategory}>{`Category: ${item.category}`}</Text>
+//             <Text style={styles.expenseDescription}>{`Description: ${item.description}`}</Text>
+//             <Text style={styles.expenseDate}>{`Date: ${item.date ? new Date(item.date).toLocaleDateString() : ''}`}</Text>
+//             <View style={styles.iconContainer}>
+//                 <Icon
+//                     name="edit"
+//                     size={20}
+//                     color="#fff"
+//                     style={styles.editIcon}
+//                     onPress={() => editExpenseItem(item)}
+//                 />
+//                 <Icon
+//                     name="trash-o"
+//                     size={20}
+//                     color="#fff"
+//                     style={styles.deleteIcon}
+//                     onPress={() => deleteExpense(item.id)}
+//                 />
+//             </View>
+//         </View>
+//     );
+
 //     return (
 //         <SafeAreaView style={styles.container}>
-//             <TextInput
-//                 style={styles.input}
-//                 placeholder="Expense Amount"
-//                 keyboardType="numeric"
-//                 value={expenseAmount ? expenseAmount.toString() : ''}
-//                 onChangeText={(text) => setExpenseAmount(parseFloat(text) || '')}
-//             />
-//             <View style={styles.categoryInput}>
-//                 <Picker
-//                     selectedValue={expenseCategory}
-//                     style={styles.picker}
-//                     onValueChange={(itemValue) => setExpenseCategory(itemValue)}
-//                 >
-//                     {expenseCategories.map((category, index) => (
-//                         <Picker.Item key={index} label={category.label} value={category.value} />
-//                     ))}
-//                 </Picker>
-//             </View>
-//             <Pressable
-//                 style={[styles.input, styles.datePickerButton]}
-//                 onPress={() => setShowDatePicker(true)}
-//             >
-//                 <Icon name="calendar" size={24} color="#2C3E50" />
-//                 <Text style={styles.datePickerButtonText}>
-//                     {expenseDate ? expenseDate.toDateString() : ''}
-//                 </Text>
-//             </Pressable>
-//             {showDatePicker && (
-//                 <DateTimePicker
-//                     value={expenseDate}
-//                     mode="date"
-//                     display="default"
-//                     maximumDate={new Date()}
-//                     onChange={handleDateChange}
+//             {/* expese form */}
+//             <View>
+//                 <TextInput
+//                     style={styles.input}
+//                     placeholder="Expense Amount"
+//                     placeholderTextColor="#aaa"
+//                     keyboardType="numeric"
+//                     value={expenseAmount ? expenseAmount.toString() : ''}
+//                     onChangeText={(text) => setExpenseAmount(parseFloat(text) || '')}
 //                 />
-//             )}
-//             <TextInput
-//                 style={[styles.input, styles.textArea]}
-//                 placeholder="Expense Description"
-//                 multiline
-//                 numberOfLines={4}
-//                 value={expenseDescription}
-//                 onChangeText={(text) => setExpenseDescription(text)}
-//             />
-//             <Pressable style={styles.saveButton} onPress={handleSaveExpense}>
-//                 {isLoading ? <ActivityIndicator color={"#8BC34A"} /> : <Text style={styles.saveButtonText}>{editExpense ? 'Update Expense' : 'Save Expense'}</Text>}
-//             </Pressable>
+//                 <View style={styles.categoryInput}>
+//                     <Picker
+//                         selectedValue={expenseCategory}
+//                         style={styles.picker}
+//                         onValueChange={(itemValue) => setExpenseCategory(itemValue)}
+//                     >
+//                         {expenseCategories.map((category, index) => (
+//                             <Picker.Item key={index} label={category.label} value={category.value} />
+//                         ))}
+//                     </Picker>
+//                 </View>
+//                 <Pressable
+//                     style={[styles.input, styles.datePickerButton]}
+//                     onPress={() => setShowDatePicker(true)}
+//                 >
+//                     <Icon name="calendar" size={24} color="#2C3E50" />
+//                     <Text style={styles.datePickerButtonText}>
+//                         {expenseDate ? expenseDate.toDateString() : ''}
+//                     </Text>
+//                 </Pressable>
+//                 {showDatePicker && (
+//                     <DateTimePicker
+//                         value={expenseDate}
+//                         mode="date"
+//                         display="default"
+//                         maximumDate={new Date()}
+//                         onChange={handleDateChange}
+//                     />
+//                 )}
+//                 <TextInput
+//                     style={[styles.input, styles.textArea]}
+//                     placeholder="Expense Description"
+//                     placeholderTextColor="#aaa"
+//                     multiline
+//                     numberOfLines={4}
+//                     value={expenseDescription}
+//                     onChangeText={(text) => setExpenseDescription(text)}
+//                 />
+//                 <Pressable style={styles.saveButton} onPress={handleSaveExpense}>
+//                     {isLoading ? <ActivityIndicator color={"#8BC34A"} /> : <Text style={styles.saveButtonText}>{editExpense ? 'Update Expense' : 'Save Expense'}</Text>}
+//                 </Pressable>
+//             </View>
 
 //             {allExpenses.length > 0 &&
 //                 <View style={styles.headerContainer}>
@@ -240,42 +272,24 @@
 //                 </View>
 //             }
 
-//             <FlatList
-//                 showsVerticalScrollIndicator={false}
-//                 data={allExpenses}
-//                 keyExtractor={(item) => item.id.toString()}
-//                 renderItem={({ item }) => (
-//                     <View style={[styles.expenseItem, { backgroundColor: setColorByCategory(item.category) }]}>
-//                         <Text style={styles.expenseAmount}>{`Amount: ${item.amount}`}</Text>
-//                         <Text style={styles.expenseCategory}>{`Category: ${item.category}`}</Text>
-//                         <Text style={styles.expenseDescription}>{`Description: ${item.description}`}</Text>
-//                         <Text style={styles.expenseDate}>{`Date: ${item.date ? new Date(item.date).toLocaleDateString() : ''}`}</Text>
-//                         <View style={styles.iconContainer}>
-//                             <Icon
-//                                 name="edit"
-//                                 size={20}
-//                                 color="#fff"
-//                                 style={styles.editIcon}
-//                                 onPress={() => editExpenseItem(item)}
-//                             />
-//                             <Icon
-//                                 name="trash-o"
-//                                 size={20}
-//                                 color="#fff"
-//                                 style={styles.deleteIcon}
-//                                 onPress={() => deleteExpense(item.id)}
-//                             />
-//                         </View>
-//                     </View>
-//                 )}
-//             />
-
-//             {calendarView && (
+//             {calendarView ? (
 //                 <Calendar
 //                     current={selectedDate}
 //                     markedDates={markedDates}
 //                     onDayPress={handleDayPress}
 //                     theme={calendarTheme}
+//                 />
+//             ) : (
+//                 <FlatList
+//                     showsVerticalScrollIndicator={false}
+//                     data={allExpenses}
+//                     keyExtractor={(item) => item.id.toString()}
+//                     renderItem={renderExpenseItem}
+//                     getItemLayout={(data, index) => (
+//                         { length: 100, offset: 100 * index, index }
+//                     )}
+//                     initialNumToRender={10}
+//                     maxToRenderPerBatch={10}
 //                 />
 //             )}
 
@@ -379,6 +393,11 @@
 //         borderRadius: 8,
 //         marginBottom: 16,
 //         padding: 16,
+//         elevation: 3,
+//         shadowColor: '#000',
+//         shadowOffset: { width: 0, height: 2 },
+//         shadowOpacity: 0.1,
+//         shadowRadius: 4,
 //     },
 //     expenseAmount: {
 //         fontSize: 18,
@@ -462,6 +481,7 @@ const ExpenseTrackerScreen = () => {
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [markedDates, setMarkedDates] = useState({});
     const [calendarView, setCalendarView] = useState(false);
+    const [showForm, setShowForm] = useState(true);
 
     const expenseCategories = [
         { label: 'Select Expense Category', value: '', color: '' },
@@ -649,94 +669,124 @@ const ExpenseTrackerScreen = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <TextInput
-                style={styles.input}
-                placeholder="Expense Amount"
-                placeholderTextColor="#aaa"
-                keyboardType="numeric"
-                value={expenseAmount ? expenseAmount.toString() : ''}
-                onChangeText={(text) => setExpenseAmount(parseFloat(text) || '')}
-            />
-            <View style={styles.categoryInput}>
-                <Picker
-                    selectedValue={expenseCategory}
-                    style={styles.picker}
-                    onValueChange={(itemValue) => setExpenseCategory(itemValue)}
-                >
-                    {expenseCategories.map((category, index) => (
-                        <Picker.Item key={index} label={category.label} value={category.value} />
-                    ))}
-                </Picker>
-            </View>
-            <Pressable
-                style={[styles.input, styles.datePickerButton]}
-                onPress={() => setShowDatePicker(true)}
-            >
-                <Icon name="calendar" size={24} color="#2C3E50" />
-                <Text style={styles.datePickerButtonText}>
-                    {expenseDate ? expenseDate.toDateString() : ''}
-                </Text>
-            </Pressable>
-            {showDatePicker && (
-                <DateTimePicker
-                    value={expenseDate}
-                    mode="date"
-                    display="default"
-                    maximumDate={new Date()}
-                    onChange={handleDateChange}
-                />
-            )}
-            <TextInput
-                style={[styles.input, styles.textArea]}
-                placeholder="Expense Description"
-                placeholderTextColor="#aaa"
-                multiline
-                numberOfLines={4}
-                value={expenseDescription}
-                onChangeText={(text) => setExpenseDescription(text)}
-            />
-            <Pressable style={styles.saveButton} onPress={handleSaveExpense}>
-                {isLoading ? <ActivityIndicator color={"#8BC34A"} /> : <Text style={styles.saveButtonText}>{editExpense ? 'Update Expense' : 'Save Expense'}</Text>}
-            </Pressable>
-
-            {allExpenses.length > 0 &&
-                <View style={styles.headerContainer}>
-                    <Text style={styles.title}>Previous Expenses</Text>
-                    <Icon
-                        name={calendarView ? 'list' : 'calendar'}
-                        size={22}
-                        color="#2C3E50"
-                        onPress={() => setCalendarView(!calendarView)}
+            {/* expese form */}
+            {showForm ? (
+                <View>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Expense Amount"
+                        placeholderTextColor="#aaa"
+                        keyboardType="numeric"
+                        value={expenseAmount ? expenseAmount.toString() : ""}
+                        onChangeText={(text) => setExpenseAmount(parseFloat(text) || "")}
                     />
-                </View>
-            }
-
-            {calendarView ? (
-                <Calendar
-                    current={selectedDate}
-                    markedDates={markedDates}
-                    onDayPress={handleDayPress}
-                    theme={calendarTheme}
-                />
-            ) : (
-                <FlatList
-                    showsVerticalScrollIndicator={false}
-                    data={allExpenses}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={renderExpenseItem}
-                    getItemLayout={(data, index) => (
-                        { length: 100, offset: 100 * index, index }
+                    <View style={styles.categoryInput}>
+                        <Picker
+                            selectedValue={expenseCategory}
+                            style={styles.picker}
+                            onValueChange={(itemValue) => setExpenseCategory(itemValue)}
+                        >
+                            {expenseCategories.map((category, index) => (
+                                <Picker.Item
+                                    key={index}
+                                    label={category.label}
+                                    value={category.value}
+                                />
+                            ))}
+                        </Picker>
+                    </View>
+                    <Pressable
+                        style={[styles.input, styles.datePickerButton]}
+                        onPress={() => setShowDatePicker(true)}
+                    >
+                        <Icon name="calendar" size={24} color="#2C3E50" />
+                        <Text style={styles.datePickerButtonText}>
+                            {expenseDate ? expenseDate.toDateString() : ""}
+                        </Text>
+                    </Pressable>
+                    {showDatePicker && (
+                        <DateTimePicker
+                            value={expenseDate}
+                            mode="date"
+                            display="default"
+                            maximumDate={new Date()}
+                            onChange={handleDateChange}
+                        />
                     )}
-                    initialNumToRender={10}
-                    maxToRenderPerBatch={10}
-                />
+                    <TextInput
+                        style={[styles.input, styles.textArea]}
+                        placeholder="Expense Description"
+                        placeholderTextColor="#aaa"
+                        multiline
+                        numberOfLines={4}
+                        value={expenseDescription}
+                        onChangeText={(text) => setExpenseDescription(text)}
+                    />
+                    <Pressable style={styles.saveButton} onPress={handleSaveExpense}>
+                        {isLoading ? (
+                            <ActivityIndicator color={"#8BC34A"} />
+                        ) : (
+                            <Text style={styles.saveButtonText}>
+                                {editExpense ? "Update Expense" : "Save Expense"}
+                            </Text>
+                        )}
+                    </Pressable>
+                </View>
+            ) : (
+                <View>
+                    {allExpenses.length > 0 && (
+                        <View style={styles.headerContainer}>
+                            <Text style={styles.title}>Previous Expenses</Text>
+                            <Icon
+                                name={calendarView ? "list" : "calendar"}
+                                size={22}
+                                color="#2C3E50"
+                                onPress={() => setCalendarView(!calendarView)}
+                            />
+                        </View>
+                    )}
+
+                    {calendarView ? (
+                        <Calendar
+                            current={selectedDate}
+                            markedDates={markedDates}
+                            onDayPress={handleDayPress}
+                            theme={calendarTheme}
+                        />
+                    ) : (
+                        <FlatList
+                            showsVerticalScrollIndicator={false}
+                            data={allExpenses}
+                            keyExtractor={(item) => item.id.toString()}
+                            renderItem={renderExpenseItem}
+                            getItemLayout={(data, index) => ({
+                                length: 100,
+                                offset: 100 * index,
+                                index,
+                            })}
+                            initialNumToRender={10}
+                            maxToRenderPerBatch={10}
+                        />
+                    )}
+
+                    {!calendarView && allExpenses.length > 0 && (
+                        <Pressable style={styles.clearButton} onPress={clearAsyncStorage}>
+                            <Text style={styles.clearButtonText}>Clear Expenses</Text>
+                        </Pressable>
+                    )}
+                </View>
             )}
 
-            {!calendarView && allExpenses.length > 0 && (
-                <Pressable style={styles.clearButton} onPress={clearAsyncStorage}>
-                    <Text style={styles.clearButtonText}>Clear Expenses</Text>
-                </Pressable>
-            )}
+            <View style={styles.floatingToggleContainer}>
+                <Icon
+                    name={showForm ? "eye" : "eye-slash"}
+                    size={30}
+                    color="#fff"
+                    onPress={() => setShowForm(!showForm)}
+                />
+            </View>
+
+            {/* expense items */}
         </SafeAreaView>
     );
 };
@@ -893,6 +943,18 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    floatingToggleContainer: {
+        position: 'absolute',
+        bottom: 40,
+        right: 20,
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        backgroundColor: '#4CAF50',
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 8,
     },
 });
 

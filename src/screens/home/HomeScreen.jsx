@@ -38,9 +38,9 @@ const HomeScreen = ({ navigation }) => {
                 handleLogout={handleLogout}
                 loading={loading}
             />
-            <View style={styles.container}>
 
-                {/* Conditionally render Header and Overview */}
+            {/* Conditionally render Header and Overview */}
+            <View style={styles.container}>
                 {showOverview ? (
                     <Overview />
                 ) : (
