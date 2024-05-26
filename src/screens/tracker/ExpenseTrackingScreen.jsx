@@ -597,6 +597,7 @@ const ExpenseTrackerScreen = () => {
     };
 
     const editExpenseItem = (expense) => {
+        setShowForm(true);
         setExpenseAmount(expense.amount);
         setExpenseCategory(expense.category);
         setExpenseDescription(expense.description);
@@ -766,6 +767,7 @@ const ExpenseTrackerScreen = () => {
                             })}
                             initialNumToRender={10}
                             maxToRenderPerBatch={10}
+                            marginBottom={20}
                         />
                     )}
 
@@ -923,7 +925,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 8,
         marginBottom: 14,
-        marginTop: 4,
     },
     editIcon: {
         marginRight: 12,
