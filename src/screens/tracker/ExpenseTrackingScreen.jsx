@@ -459,9 +459,10 @@
 
 // export default ExpenseTrackerScreen;
 
+
 import React, { useEffect, useState, useCallback } from 'react';
 import {
-    View, Text, TextInput, Pressable, StyleSheet, FlatList, SafeAreaView, Alert, ActivityIndicator
+    View, Text, TextInput, Pressable, StyleSheet, FlatList, SafeAreaView, Alert, ActivityIndicator, Dimensions
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -542,6 +543,7 @@ const ExpenseTrackerScreen = () => {
             Alert.alert('Error', 'There was an error saving the expense');
         } finally {
             setIsLoading(false);
+            setShowForm(false);
         }
     };
 
@@ -755,20 +757,21 @@ const ExpenseTrackerScreen = () => {
                             theme={calendarTheme}
                         />
                     ) : (
-                        <FlatList
-                            showsVerticalScrollIndicator={false}
-                            data={allExpenses}
-                            keyExtractor={(item) => item.id.toString()}
-                            renderItem={renderExpenseItem}
-                            getItemLayout={(data, index) => ({
-                                length: 100,
-                                offset: 100 * index,
-                                index,
-                            })}
-                            initialNumToRender={10}
-                            maxToRenderPerBatch={10}
-                            marginBottom={20}
-                        />
+                        <View style={{ height: Dimensions.get('window').height - 190 }}>
+                            <FlatList
+                                showsVerticalScrollIndicator={false}
+                                data={allExpenses}
+                                keyExtractor={(item) => item.id.toString()}
+                                renderItem={renderExpenseItem}
+                                getItemLayout={(data, index) => ({
+                                    length: 100,
+                                    offset: 100 * index,
+                                    index,
+                                })}
+                                initialNumToRender={10}
+                                maxToRenderPerBatch={10}
+                            />
+                        </View>
                     )}
 
                     {!calendarView && allExpenses.length > 0 && (
@@ -779,14 +782,16 @@ const ExpenseTrackerScreen = () => {
                 </View>
             )}
 
-            <View style={styles.floatingToggleContainer}>
-                <Icon
-                    name={showForm ? "eye" : "eye-slash"}
-                    size={30}
-                    color="#fff"
-                    onPress={() => setShowForm(!showForm)}
-                />
-            </View>
+            {allExpenses.length > 0 && (
+                <View style={styles.floatingToggleContainer}>
+                    <Icon
+                        name={showForm ? "eye" : "eye-slash"}
+                        size={30}
+                        color="#fff"
+                        onPress={() => setShowForm(!showForm)}
+                    />
+                </View>
+            )}
 
             {/* expense items */}
         </SafeAreaView>
@@ -947,7 +952,7 @@ const styles = StyleSheet.create({
     },
     floatingToggleContainer: {
         position: 'absolute',
-        bottom: 40,
+        bottom: 80,
         right: 20,
         width: 60,
         height: 60,
