@@ -3,7 +3,9 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from "react-native-vector-icons";
 
 const ChatBubble = ({ role, text, onSpeech }) => {
-
+    // Format response text into human-readable format
+    text = text.replace(/\*\*/g, '');
+    text = text.replace(/\*/g, '');
     return (
         <View style={[
             styles.chatItem,
@@ -11,27 +13,25 @@ const ChatBubble = ({ role, text, onSpeech }) => {
         ]}
         >
             <Text style={styles.chatText}>{text}</Text>
-            {role === "model" && (
+            {/* {role === "model" && (
                 <TouchableOpacity onPress={onSpeech} style={styles.speakerIcon}>
                     <Ionicons name="volume-high-outline" size={24} color="#fff" />
                 </TouchableOpacity>
-            )}
+            )} */}
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     chatItem: {
-        padding: 8,
+        padding: 12,
         marginVertical: 8,
-        marginHorizontal: 16,
         borderRadius: 8,
-        maxWidth: "79%",
-        alignItems: "flex-end"
+        maxWidth: "80%",
+        alignItems: "flex-end",
     },
     userChatItem: {
         alignSelf: "flex-end",
-        color: "#fff",
         backgroundColor: "#8BC34A",
     },
     modelChatItem: {
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 20,
-        backgroundColor: "#2C3E50",
+        backgroundColor: "#4CAF50",
     },
 });
 

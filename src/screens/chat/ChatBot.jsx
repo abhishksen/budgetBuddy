@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, ActivityIndicator } from "react-native";
 import axios from "axios";
 import { speak, isSpeakingAsync, stop } from "expo-speech";
@@ -15,8 +15,16 @@ const ChatBot = () => {
 
     const API_KEY = geminiApiKey;
 
-    const handleUserInput = async () => {
+    useEffect(() => {
+        // Add a welcome message when the component mounts
+        const welcomeMessage = {
+            role: "model",
+            parts: [{ text: "Hello there!👋 How can I assist you today? Is there anything I can help you with?" }],
+        };
+        setChat([welcomeMessage]);
+    }, []);
 
+    const handleUserInput = async () => {
         if (!userInput) return;
 
         let updatedChat = [
@@ -34,8 +42,8 @@ const ChatBot = () => {
                     contents: updatedChat,
                 }
             );
-            // console.log(response.data);
             const modelResponse = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I didn't understand that.";
+
             if (modelResponse) {
                 const updatedChatWithModel = [
                     ...updatedChat,
@@ -46,7 +54,6 @@ const ChatBot = () => {
                 ];
                 setChat(updatedChatWithModel);
                 setUserInput("");
-                // setLoading(false);
             }
         } catch (error) {
             console.error("error calling gemini", error);
@@ -76,6 +83,9 @@ const ChatBot = () => {
             onSpeech={() => handleSpeech(item.parts[0].text)}
         />
     );
+
+
+
     return (
         <View style={styles.container}>
             <FlatList
@@ -94,11 +104,9 @@ const ChatBot = () => {
                     placeholderTextColor={"#666"}
                 />
                 <TouchableOpacity style={styles.button} onPress={handleUserInput}>
-                    {/* <Text style={styles.buttonText}>Send</Text> */}
-                    <FontAwesome name="send" size={24} color="white" />
+                    {loading ? <ActivityIndicator size="small" color="#fff" /> : <FontAwesome name="send" size={24} color="white" />}
                 </TouchableOpacity>
             </View>
-            {loading && <ActivityIndicator size="small" color="#0000ff" />}
             {error && <Text style={styles.error}>{error}</Text>}
         </View>
     );
@@ -109,13 +117,6 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: 16,
         paddingBottom: 16,
-        backgroundColor: "#fff",
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 16,
-        textAlign: "center",
     },
     chatContainer: {
         flexGrow: 1,
@@ -129,14 +130,15 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
-        padding: 8,
+        padding: 10,
+        fontSize: 16,
         marginRight: 8,
         backgroundColor: "#f5f5f5",
         borderRadius: 8,
         marginRight: 8,
     },
     button: {
-        padding: 10,
+        padding: 12,
         backgroundColor: "#4CAF50",
         borderRadius: 8,
     },
@@ -150,6 +152,8 @@ const styles = StyleSheet.create({
     },
     error: {
         color: "red",
+        fontWeight: 'bold',
+        textAlign: 'center',
         marginTop: 8,
     },
 });

@@ -466,6 +466,7 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import * as SecureStore from 'expo-secure-store';
 import { Picker } from '@react-native-picker/picker';
 import { Calendar } from 'react-native-calendars';
@@ -739,7 +740,7 @@ const ExpenseTrackerScreen = () => {
                 <View>
                     {allExpenses.length > 0 && (
                         <View style={styles.headerContainer}>
-                            <Text style={styles.title}>Previous Expenses</Text>
+                            <Text style={styles.title}>{calendarView ? "Calendar view" : "List view"}</Text>
                             <Icon
                                 name={calendarView ? "list" : "calendar"}
                                 size={22}
@@ -784,8 +785,8 @@ const ExpenseTrackerScreen = () => {
 
             {allExpenses.length > 0 && (
                 <View style={styles.floatingToggleContainer}>
-                    <Icon
-                        name={showForm ? "eye" : "eye-slash"}
+                    <MaterialIcon
+                        name={showForm ? "visibility" : "visibility-off"}
                         size={30}
                         color="#fff"
                         onPress={() => setShowForm(!showForm)}
