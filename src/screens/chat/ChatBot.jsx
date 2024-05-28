@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, ActivityIndicator, Alert } from "react-native";
 import axios from "axios";
 import { speak, isSpeakingAsync, stop } from "expo-speech";
 import { geminiApiKey } from "../../../constant";
 import ChatBubble from "./ChatBubble";
 import { FontAwesome } from "react-native-vector-icons";
+import * as SecureStore from 'expo-secure-store';
 
 const ChatBot = () => {
     const [chat, setChat] = useState([]);
@@ -16,13 +17,60 @@ const ChatBot = () => {
     const API_KEY = geminiApiKey;
 
     useEffect(() => {
-        // Add a welcome message when the component mounts
-        const welcomeMessage = {
-            role: "model",
-            parts: [{ text: "Hello there!👋 How can I assist you today? Is there anything I can help you with?" }],
+        // Load chat history from SecureStore
+        const loadChatHistory = async () => {
+            try {
+                const savedChat = await SecureStore.getItemAsync('chatHistory');
+                if (savedChat) {
+                    setChat(JSON.parse(savedChat));
+                } else {
+                    // Add a welcome message if no chat history is found
+                    const welcomeMessage = {
+                        role: "model",
+                        parts: [{ text: "Hello there!👋 How can I assist you today? Is there anything I can help you with?" }],
+                    };
+                    setChat([welcomeMessage]);
+                }
+            } catch (error) {
+                console.error('Error loading chat history:', error);
+            }
         };
-        setChat([welcomeMessage]);
+        loadChatHistory();
     }, []);
+
+    const saveChatHistory = async (chat) => {
+        try {
+            await SecureStore.setItemAsync('chatHistory', JSON.stringify(chat));
+        } catch (error) {
+            console.error('Error saving chat history:', error);
+        }
+    };
+
+    const clearChatHistory = async () => {
+        Alert.alert(
+            'Confirm',
+            'Are you sure you want to clear all your previous chat?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Yes',
+                    onPress: async () => {
+                        try {
+                            await SecureStore.deleteItemAsync('chatHistory');
+                            const welcomeMessage = {
+                                role: "model",
+                                parts: [{ text: "Hello there!👋 How can I assist you today? Is there anything I can help you with?" }],
+                            };
+                            setChat([welcomeMessage]);
+                        } catch (error) {
+                            console.error('Error clearing chat history:', error);
+                        }
+                    },
+                },
+            ],
+            { cancelable: false }
+        );
+    };
 
     const handleUserInput = async () => {
         if (!userInput) return;
@@ -53,6 +101,7 @@ const ChatBot = () => {
                     },
                 ];
                 setChat(updatedChatWithModel);
+                saveChatHistory(updatedChatWithModel); // Save chat history
                 setUserInput("");
             }
         } catch (error) {
@@ -84,8 +133,6 @@ const ChatBot = () => {
         />
     );
 
-
-
     return (
         <View style={styles.container}>
             <FlatList
@@ -108,6 +155,9 @@ const ChatBot = () => {
                 </TouchableOpacity>
             </View>
             {error && <Text style={styles.error}>{error}</Text>}
+            {chat.length > 1 && <TouchableOpacity style={styles.clearButton} onPress={clearChatHistory}>
+                <Text style={styles.clearButtonText}>Clear Chat History</Text>
+            </TouchableOpacity>}
         </View>
     );
 };
@@ -155,6 +205,17 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         marginTop: 8,
+    },
+    clearButton: {
+        padding: 10,
+        backgroundColor: "#f44336",
+        borderRadius: 8,
+        marginTop: 10,
+        alignItems: 'center',
+    },
+    clearButtonText: {
+        color: "#fff",
+        fontWeight: 'bold',
     },
 });
 
