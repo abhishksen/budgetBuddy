@@ -98,20 +98,20 @@ const EducationalContentScreen = () => {
             );
             setVideos(videoResponse.data.items);
 
-            const newsResponse = await axios.get(
-                `https://newsapi.org/v2/everything`,
-                {
-                    params: {
-                        q: searchQuery,
-                        apiKey: newsApiKey,
-                        language: 'en',
-                        country: 'in',
-                        sortBy: 'publishedAt',
-                        pageSize: 10,
-                    }
-                }
-            );
-            setNews(newsResponse.data.articles);
+            // const newsResponse = await axios.get(
+            //     `https://newsapi.org/v2/everything`,
+            //     {
+            //         params: {
+            //             q: searchQuery,
+            //             apiKey: newsApiKey,
+            //             language: 'en',
+            //             country: 'in',
+            //             sortBy: 'publishedAt',
+            //             pageSize: 10,
+            //         }
+            //     }
+            // );
+            // setNews(newsResponse.data.articles);
         } catch (error) {
             console.error('Error fetching data:', error);
         } finally {
