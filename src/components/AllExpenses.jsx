@@ -1,7 +1,8 @@
 import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import * as FileSystem from 'react-native-fs';
 
 const AllExpenses = ({ data }) => {
     const [selectedCategory, setSelectedCategory] = useState('');
@@ -81,9 +82,31 @@ const AllExpenses = ({ data }) => {
     };
 
     // Function to export the expenses table as a CSV file
-    const handleExport = () => {
-        console.log('Exporting expenses as CSV file');
-        // Logic to export the expenses as a CSV file
+    const handleExport = async () => {
+        const csvData = [
+            ['ID', 'Category', 'Amount', 'Description', 'Date'],
+            ...filteredData.map(expense => [
+                expense.id,
+                expense.category,
+                expense.amount,
+                expense.description,
+                new Date(expense.date).toLocaleDateString()
+            ])
+        ].map(row => row.join(',')).join('\n');
+
+        console.log(csvData);
+
+        const filePath = `${FileSystem.DocumentDirectoryPath}/expenses.csv`;
+
+        console.log('File Path:', filePath);
+
+        try {
+            await FileSystem.writeFile(filePath, csvData, 'utf8');
+            await Sharing.shareAsync(filePath);
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'Failed to export expenses. Please try again.');
+        }
     };
 
     return (
