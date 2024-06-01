@@ -2,7 +2,8 @@ import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import * as FileSystem from 'react-native-fs';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 const AllExpenses = ({ data }) => {
     const [selectedCategory, setSelectedCategory] = useState('');
@@ -40,7 +41,7 @@ const AllExpenses = ({ data }) => {
     let filteredData = data;
 
     if (selectedCategory !== '') {
-        filteredData = filteredData.filter(expense => expense.category === selectedCategory);
+        filteredData = filteredData.filter(expense => expense.category.toLowerCase().replace(/\s/g, '') === selectedCategory);
     }
 
     switch (selectedSortOption) {
@@ -94,14 +95,13 @@ const AllExpenses = ({ data }) => {
             ])
         ].map(row => row.join(',')).join('\n');
 
-        console.log(csvData);
+        const fileName = 'expenses.csv';
+        const filePath = `${FileSystem.documentDirectory}${fileName}`;
 
-        const filePath = `${FileSystem.DocumentDirectoryPath}/expenses.csv`;
-
-        console.log('File Path:', filePath);
+        console.log(filePath);
 
         try {
-            await FileSystem.writeFile(filePath, csvData, 'utf8');
+            await FileSystem.writeAsStringAsync(filePath, csvData, { encoding: FileSystem.EncodingType.UTF8 });
             await Sharing.shareAsync(filePath);
         } catch (error) {
             console.error(error);
