@@ -98,7 +98,7 @@ const AllExpenses = ({ data }) => {
         const fileName = 'expenses.csv';
         const filePath = `${FileSystem.documentDirectory}${fileName}`;
 
-        console.log(filePath);
+        // console.log(filePath);
 
         try {
             await FileSystem.writeAsStringAsync(filePath, csvData, { encoding: FileSystem.EncodingType.UTF8 });
