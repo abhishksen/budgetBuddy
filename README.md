@@ -6,6 +6,8 @@
 
 BudgetBuddy emerges as a solution to combat financial challenges faced by students by offering a comprehensive expense tracking platform. With BudgetBuddy, users can regain control of their finances and make informed decisions to achieve their financial goals.
 
+[![YouTube](http://i.ytimg.com/vi/PZw0TLYtOvk/hqdefault.jpg)](https://www.youtube.com/watch?v=PZw0TLYtOvk)
+
 ## App Features
 
 This app consists of various features:
