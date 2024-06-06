@@ -1,15 +1,46 @@
-import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const WelcomeScreen = ({ navigation }) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    const contents = [
+        {
+            title: 'Welcome to BudgetBuddy',
+            subtitle: 'Beyond Budgeting – BudgetBuddy, Your Guide to Financial Wisdom.',
+            image: require('../../../assets/img/logo.png') // Replace with your image
+        },
+        {
+            title: 'Expense Tracking',
+            subtitle: 'Track your expenses with advanced analytics using calendars, charts, and tables.',
+            image: require('../../../assets/img/logo.png') // Replace with your image
+        },
+        {
+            title: 'Financial Literacy',
+            subtitle: 'Explore financial calculators, business start-up news articles, and videos.',
+            image: require('../../../assets/img/logo.png') // Replace with your image
+        },
+        {
+            title: 'AI-powered Chatbot',
+            subtitle: 'Your go-to expense companion with smart AI assistance.',
+            image: require('../../../assets/img/logo.png') // Replace with your image
+        }
+    ];
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentIndex((prevIndex) => (prevIndex + 1) % contents.length);
+        }, 2000); // Change content every 2 seconds
+
+        return () => clearInterval(interval);
+    }, []);
+
     const handleSkip = () => {
-        // Navigate to the Home screen or any desired screen
         navigation.navigate('Home');
     };
 
     const handleGetStarted = () => {
-        // Navigate to the Login screen or any desired screen
         navigation.navigate('Login');
     };
 
@@ -20,14 +51,12 @@ const WelcomeScreen = ({ navigation }) => {
                 style={styles.gradient}
             />
             <Image
-                source={require('../../../assets/img/logo.png')}
+                source={contents[currentIndex].image}
                 style={styles.image}
                 resizeMode="contain"
             />
-            <Text style={styles.title}>Welcome to BudgetBuddy</Text>
-            <Text style={styles.subtitle}>
-                Beyond Budgeting – BudgetBuddy, Your Guide to Financial Wisdom.
-            </Text>
+            <Text style={styles.title}>{contents[currentIndex].title}</Text>
+            <Text style={styles.subtitle}>{contents[currentIndex].subtitle}</Text>
             <Pressable style={styles.button} onPress={handleGetStarted}>
                 <Text style={styles.buttonText}>Get Started</Text>
             </Pressable>
